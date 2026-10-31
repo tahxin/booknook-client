@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Borrow } from "@/types";
 import { getMyBorrows, returnBook, ApiError } from "@/lib/api";
 import { BookCover } from "@/components/common/book-cover";
+import { EmptyState } from "@/components/common/empty-state";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
@@ -163,27 +164,14 @@ export function MyBorrowsView() {
           </Table>
         </div>
       ) : (
-        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card/40 p-8 flex flex-col items-center justify-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <h3 className="font-semibold text-lg text-foreground">
-            No active borrows
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            You don&apos;t have any books currently borrowed. Explore the
-            catalog and check out your next favorite read!
-          </p>
-          <Link
-            href="/books"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "rounded-xl mt-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-            )}
-          >
-            Browse Books
-          </Link>
-        </div>
+        <EmptyState
+          title="No active borrows"
+          description="You don't have any books currently borrowed. Explore our catalog and check out your next favorite read!"
+          action={{
+            label: "Browse Books",
+            href: "/books",
+          }}
+        />
       )}
     </div>
   );
