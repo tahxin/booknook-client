@@ -12,6 +12,12 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 export function HeroSlider() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const slides = [
     {
       id: 1,
@@ -42,8 +48,54 @@ export function HeroSlider() {
     },
   ];
 
+  if (!mounted) {
+    const slide = slides[0];
+    return (
+      <div className="relative w-full rounded-3xl border border-border/80 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
+        <div className="w-full relative pb-8">
+          <div className="max-w-2xl flex flex-col items-start gap-6 select-none">
+            <div className="rounded-full px-3.5 py-1 text-xs text-muted-foreground border border-border/80 bg-background/40">
+              {slide.badge}
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.08] whitespace-pre-line text-left">
+              {slide.title}
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl text-left">
+              {slide.description}
+            </p>
+            <div className="flex items-center gap-3 pt-2">
+              <Link
+                href={slide.primaryAction.href}
+                className={cn(
+                  buttonVariants({ variant: "default" }),
+                  "h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+                )}
+              >
+                {slide.primaryAction.label}
+              </Link>
+              <Link
+                href={slide.secondaryAction.href}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-11 px-6 rounded-xl border-border bg-card/60 hover:bg-muted font-medium text-foreground"
+                )}
+              >
+                {slide.secondaryAction.label}
+              </Link>
+            </div>
+          </div>
+          <div className="mt-8 flex items-center gap-2">
+            <span className="w-8 h-1 rounded-full bg-[#f5b942]" />
+            <span className="w-4 h-1 rounded-full bg-muted-foreground/30" />
+            <span className="w-4 h-1 rounded-full bg-muted-foreground/30" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full rounded-3xl border border-white/10 dark:border-white/10 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
+    <div className="relative w-full rounded-3xl border border-border/80 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"

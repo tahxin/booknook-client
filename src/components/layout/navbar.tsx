@@ -68,14 +68,14 @@ export function Navbar() {
   return (
     <header className="sticky top-4 z-50 w-full px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-[#141416]/95 dark:bg-[#141416]/95 border border-white/10 dark:border-white/10 shadow-sm backdrop-blur-md">
+        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-card/90 dark:bg-[#141416]/95 border border-border/80 dark:border-white/10 shadow-sm backdrop-blur-md">
           {/* Brand Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-bold text-base tracking-tight text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2.5 font-bold text-base tracking-tight text-foreground dark:text-white hover:opacity-90 transition-opacity"
           >
             <BookNookLogo className="h-6 w-6 rounded-md" />
-            <span className="font-bold text-white tracking-tight">BookNook</span>
+            <span className="font-bold text-foreground dark:text-white tracking-tight">BookNook</span>
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -92,8 +92,8 @@ export function Navbar() {
                   href={link.href}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     isActive
-                      ? "bg-[#26262a] text-white"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-zinc-200 text-zinc-900 dark:bg-[#26262a] dark:text-white"
+                      : "text-muted-foreground hover:text-foreground dark:text-zinc-400 dark:hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -111,36 +111,35 @@ export function Navbar() {
               <DropdownMenuTrigger className="flex items-center justify-center h-8 w-8 rounded-full bg-[#274258] text-white font-semibold text-xs transition outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
                 {initial}
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-semibold leading-none text-foreground">
-                      {user.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate leading-none">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => router.push("/profile")}
-                  className="cursor-pointer"
-                >
-                  My Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => router.push("/my-books")}
-                  className="cursor-pointer"
-                >
-                  My Books
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => router.push("/my-borrows")}
-                  className="cursor-pointer"
-                >
-                  My Borrows
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border p-1">
+                <div className="px-3 py-2 border-b border-border/50">
+                  <p className="text-sm font-semibold leading-none text-foreground">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate leading-none mt-1">
+                    {user.email}
+                  </p>
+                </div>
+                <div className="py-1">
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="cursor-pointer"
+                  >
+                    My Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-books")}
+                    className="cursor-pointer"
+                  >
+                    My Books
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-borrows")}
+                    className="cursor-pointer"
+                  >
+                    My Borrows
+                  </DropdownMenuItem>
+                </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
@@ -180,7 +179,7 @@ export function Navbar() {
                         onClick={() => setMobileOpen(false)}
                         className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                           isActive
-                            ? "bg-[#26262a] text-white"
+                            ? "bg-zinc-200 text-zinc-900 dark:bg-[#26262a] dark:text-white"
                             : "text-muted-foreground hover:bg-muted"
                         }`}
                       >
