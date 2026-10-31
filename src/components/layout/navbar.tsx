@@ -3,14 +3,27 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu } from "lucide-react";
+import {
+  Menu,
+  UserIcon,
+  SettingsIcon,
+  LogOutIcon,
+  BookOpenIcon,
+  BookmarkCheckIcon,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ThemeToggle } from "./theme-toggle";
 import { BookNookLogo } from "@/components/common/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -106,46 +119,79 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
 
-            {/* User Avatar Circle */}
+            {/* Profile Dropdown with Avatar */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center justify-center h-8 w-8 rounded-full bg-[#274258] text-white font-semibold text-xs transition outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
-                {initial}
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    aria-label="Open account menu"
+                    size="icon"
+                    variant="ghost"
+                    className="rounded-full size-8 p-0 ring-offset-background transition outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  />
+                }
+              >
+                <Avatar className="size-8">
+                  {user.image ? (
+                    <AvatarImage alt={user.name} src={user.image} />
+                  ) : (
+                    <AvatarImage alt={user.name} src="https://github.com/shadcn.png" />
+                  )}
+                  <AvatarFallback className="bg-[#274258] text-white font-semibold text-xs">
+                    {initial}
+                  </AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border p-1">
-                <div className="px-3 py-2 border-b border-border/50">
-                  <p className="text-sm font-semibold leading-none text-foreground">
-                    {user.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate leading-none mt-1">
-                    {user.email}
-                  </p>
-                </div>
-                <div className="py-1">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal px-2 py-1.5">
+                    <div className="flex flex-col gap-1">
+                      <p className="font-medium text-foreground text-sm leading-none">
+                        {user.name}
+                      </p>
+                      <p className="text-muted-foreground text-xs leading-none">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => router.push("/profile")}
-                    className="cursor-pointer"
+                    className="cursor-pointer gap-2"
                   >
-                    My Profile
+                    <UserIcon className="size-4" aria-hidden="true" />
+                    Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/my-books")}
-                    className="cursor-pointer"
+                    className="cursor-pointer gap-2"
                   >
+                    <BookOpenIcon className="size-4" aria-hidden="true" />
                     My Books
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/my-borrows")}
-                    className="cursor-pointer"
+                    className="cursor-pointer gap-2"
                   >
+                    <BookmarkCheckIcon className="size-4" aria-hidden="true" />
                     My Borrows
                   </DropdownMenuItem>
-                </div>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="cursor-pointer gap-2"
+                  >
+                    <SettingsIcon className="size-4" aria-hidden="true" />
+                    Settings
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  variant="destructive"
                   onClick={handleLogout}
-                  className="text-destructive focus:text-destructive cursor-pointer"
+                  className="cursor-pointer gap-2"
                 >
-                  Logout
+                  <LogOutIcon className="size-4" aria-hidden="true" />
+                  Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
