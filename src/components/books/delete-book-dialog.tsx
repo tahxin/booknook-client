@@ -52,12 +52,12 @@ export function DeleteBookDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="sm:max-w-md rounded-2xl border border-white/10 bg-[#141416] text-white p-6">
+      <AlertDialogContent className="sm:max-w-md rounded-2xl border border-border bg-card text-foreground p-6">
         <AlertDialogHeader className="text-left space-y-2">
-          <AlertDialogTitle className="text-xl font-bold tracking-tight text-white">
+          <AlertDialogTitle className="text-xl font-bold tracking-tight text-foreground">
             Delete this book?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-zinc-400 leading-relaxed">
+          <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
             {book.title} will be removed from the library. This cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -68,7 +68,7 @@ export function DeleteBookDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={deleting}
-            className="rounded-xl h-10 px-5 border-white/10 bg-transparent text-white hover:bg-white/5 font-normal"
+            className="rounded-xl h-10 px-5 border-border bg-transparent text-foreground hover:bg-muted font-normal"
           >
             Cancel
           </Button>
@@ -76,7 +76,7 @@ export function DeleteBookDialog({
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="rounded-xl h-10 px-5 bg-[#f87171] text-zinc-950 hover:bg-[#ef4444] font-medium"
+            className="rounded-xl h-10 px-5 bg-destructive text-destructive-foreground hover:bg-destructive/90 font-medium"
           >
             {deleting ? (
               <span className="flex items-center gap-2">

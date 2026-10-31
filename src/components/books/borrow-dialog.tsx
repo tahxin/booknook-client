@@ -56,38 +56,38 @@ export function BorrowDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-2xl border border-border/80 bg-[#141416] text-white p-6">
+      <DialogContent className="sm:max-w-md rounded-2xl border border-border bg-card text-foreground p-6">
         <DialogHeader className="text-left space-y-1">
-          <DialogTitle className="text-xl font-bold tracking-tight text-white">
+          <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
             Confirm Borrow
           </DialogTitle>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             {book.title} by {book.author}
           </p>
         </DialogHeader>
 
         <div className="space-y-4 py-3">
           <div className="space-y-1.5">
-            <Label htmlFor="borrower-name" className="text-xs text-zinc-300 font-normal">
+            <Label htmlFor="borrower-name" className="text-xs text-muted-foreground font-normal">
               Name
             </Label>
             <Input
               id="borrower-name"
               value={userName}
               disabled
-              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-zinc-200 text-sm"
+              className="h-11 rounded-xl bg-muted/50 border-border text-foreground text-sm"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="borrower-email" className="text-xs text-zinc-300 font-normal">
+            <Label htmlFor="borrower-email" className="text-xs text-muted-foreground font-normal">
               Email
             </Label>
             <Input
               id="borrower-email"
               value={userEmail}
               disabled
-              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-zinc-200 text-sm"
+              className="h-11 rounded-xl bg-muted/50 border-border text-foreground text-sm"
             />
           </div>
         </div>
@@ -98,7 +98,7 @@ export function BorrowDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
-            className="rounded-xl h-11 px-5 border-white/10 bg-transparent text-white hover:bg-white/5 font-normal"
+            className="rounded-xl h-11 px-5 border-border bg-transparent text-foreground hover:bg-muted font-normal"
           >
             Cancel
           </Button>

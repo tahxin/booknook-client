@@ -61,9 +61,9 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto rounded-3xl border border-white/10 dark:border-white/10 bg-[#141416] p-6 sm:p-8 text-white shadow-xl">
+    <Card className="w-full max-w-md mx-auto rounded-3xl border border-border bg-card p-6 sm:p-8 text-foreground shadow-xl">
       <CardContent className="p-0">
-        <h1 className="text-3xl font-bold tracking-tight text-white mb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-6">
           Sign in to your account
         </h1>
 
@@ -75,7 +75,7 @@ export function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs text-zinc-300 font-normal">
+            <Label htmlFor="email" className="text-xs text-muted-foreground font-normal">
               Email
             </Label>
             <Input
@@ -85,16 +85,16 @@ export function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-white placeholder:text-zinc-500"
+              className="h-11 rounded-xl bg-muted/40 border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-xs text-zinc-300 font-normal">
+              <Label htmlFor="password" className="text-xs text-muted-foreground font-normal">
                 Password
               </Label>
-              <span className="text-xs text-zinc-500 cursor-not-allowed select-none">
+              <span className="text-xs text-muted-foreground/60 cursor-not-allowed select-none">
                 Forgot password?
               </span>
             </div>
@@ -105,7 +105,7 @@ export function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-white placeholder:text-zinc-500"
+              className="h-11 rounded-xl bg-muted/40 border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
@@ -127,18 +127,18 @@ export function LoginForm() {
           </div>
         </form>
 
-        <div className="py-4 text-center text-xs text-zinc-500">or</div>
+        <div className="py-4 text-center text-xs text-muted-foreground">or</div>
 
         <Button
           type="button"
           variant="outline"
           onClick={handleGoogleSignIn}
-          className="w-full h-11 rounded-xl border-white/10 bg-[#1c1c20] hover:bg-[#24242a] text-white font-normal text-sm"
+          className="w-full h-11 rounded-xl border-border bg-background hover:bg-muted text-foreground font-normal text-sm"
         >
           Continue with Google
         </Button>
 
-        <p className="text-center text-xs text-zinc-400 pt-5">
+        <p className="text-center text-xs text-muted-foreground pt-5">
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
