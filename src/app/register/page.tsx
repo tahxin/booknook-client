@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { RegisterForm } from "@/components/auth/register-form";
+import { Spinner } from "@/components/common/spinner";
 
 export const metadata: Metadata = {
   title: "BookNook | Register",
@@ -9,7 +11,15 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <div className="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
-      <RegisterForm />
+      <Suspense
+        fallback={
+          <div className="h-96 flex items-center justify-center">
+            <Spinner label="Loading registration form..." />
+          </div>
+        }
+      >
+        <RegisterForm />
+      </Suspense>
     </div>
   );
 }

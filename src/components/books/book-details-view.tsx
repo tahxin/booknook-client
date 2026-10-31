@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Book } from "@/types";
 import { getBook } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { BookCover } from "@/components/common/book-cover";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Spinner } from "@/components/common/spinner";
 import { BorrowDialog } from "./borrow-dialog";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface BookDetailsViewProps {
@@ -16,6 +19,8 @@ interface BookDetailsViewProps {
 }
 
 export function BookDetailsView({ id }: BookDetailsViewProps) {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,7 +145,16 @@ export function BookDetailsView({ id }: BookDetailsViewProps) {
             <Button
               type="button"
               disabled={!isAvailable}
-              onClick={() => setBorrowModalOpen(true)}
+              onClick={() => {
+                if (!session) {
+                  toast.info("Please log in to borrow books.");
+                  router.push(
+                    `/login?callbackUrl=${encodeURIComponent(`/books/${book._id}`)}`
+                  );
+                  return;
+                }
+                setBorrowModalOpen(true);
+              }}
               className="h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium disabled:opacity-50"
             >
               {isAvailable ? "Borrow This Book" : "Not Available"}

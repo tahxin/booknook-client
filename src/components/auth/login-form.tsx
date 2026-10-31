@@ -14,12 +14,21 @@ import { toast } from "sonner";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl =
+    searchParams.get("callbackUrl") || searchParams.get("redirect") || "/";
+
+  const { data: session, isPending } = authClient.useSession();
 
   const [email, setEmail] = useState("you@example.com");
   const [password, setPassword] = useState("••••••");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    if (!isPending && session) {
+      router.replace(callbackUrl);
+    }
+  }, [session, isPending, callbackUrl, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +62,10 @@ export function LoginForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.origin,
+        callbackURL:
+          callbackUrl && callbackUrl !== "/"
+            ? `${window.location.origin}${callbackUrl}`
+            : window.location.origin,
       });
     } catch {
       toast.error("Google sign-in requires credentials in .env.local");
@@ -141,8 +153,12 @@ export function LoginForm() {
         <p className="text-center text-xs text-muted-foreground pt-5">
           Don&apos;t have an account?{" "}
           <Link
-            href="/register"
-            className="text-primary hover:underline underline-offset-4"
+            href={
+              callbackUrl && callbackUrl !== "/"
+                ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                : "/register"
+            }
+            className="text-primary hover:underline underline-offset-4 font-medium"
           >
             Register
           </Link>

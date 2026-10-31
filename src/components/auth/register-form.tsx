@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,24 @@ import { toast } from "sonner";
 
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl =
+    searchParams.get("callbackUrl") || searchParams.get("redirect") || "/";
+
+  const { data: session, isPending } = authClient.useSession();
+
   const [name, setName] = useState("Nishat");
   const [email, setEmail] = useState("you@example.com");
   const [image, setImage] = useState("https://i.ibb.co/photo.jpg");
   const [password, setPassword] = useState("••••••");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    if (!isPending && session) {
+      router.replace(callbackUrl);
+    }
+  }, [session, isPending, callbackUrl, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +59,28 @@ export function RegisterForm() {
         return;
       }
 
-      toast.success("Registered successfully. Please log in.");
-      router.push("/login");
+      toast.success("Registered successfully! Welcome to BookNook.");
+      
+      // Attempt auto-login or redirect to callbackUrl
+      try {
+        const loginRes = await authClient.signIn.email({
+          email,
+          password,
+        });
+        if (!loginRes.error) {
+          router.push(callbackUrl);
+          router.refresh();
+          return;
+        }
+      } catch {
+        // Fall back to login redirect
+      }
+
+      router.push(
+        callbackUrl && callbackUrl !== "/"
+          ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+          : "/login"
+      );
     } catch {
       setError("Registration failed.");
       toast.error("Registration failed.");
@@ -61,7 +93,10 @@ export function RegisterForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.origin,
+        callbackURL:
+          callbackUrl && callbackUrl !== "/"
+            ? `${window.location.origin}${callbackUrl}`
+            : window.location.origin,
       });
     } catch {
       toast.error("Google sign-in requires client ID and secret in .env.local");
@@ -174,8 +209,12 @@ export function RegisterForm() {
         <p className="text-center text-xs text-muted-foreground pt-5">
           Already have an account?{" "}
           <Link
-            href="/login"
-            className="text-primary hover:underline underline-offset-4"
+            href={
+              callbackUrl && callbackUrl !== "/"
+                ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                : "/login"
+            }
+            className="text-primary hover:underline underline-offset-4 font-medium"
           >
             Login
           </Link>

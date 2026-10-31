@@ -108,4 +108,12 @@ test.describe("BookNook Client End-to-End Tests", () => {
     const homeButton = page.getByRole("link", { name: /Back to Home/i });
     await expect(homeButton).toBeVisible();
   });
+
+  test("Protected routes redirect to login with callbackUrl", async ({
+    page,
+  }) => {
+    await page.goto("/add-book");
+    await page.waitForURL(/\/login\?callbackUrl=/);
+    expect(page.url()).toContain("callbackUrl=%2Fadd-book");
+  });
 });
