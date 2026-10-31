@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, BookOpen, RotateCcw } from "lucide-react";
-import { Book, Category, CATEGORIES } from "@/types";
+import { Book, CATEGORIES } from "@/types";
 import { getBooks } from "@/lib/api";
 import { BookCard } from "./book-card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function AllBooksView() {
@@ -20,10 +17,8 @@ export function AllBooksView() {
 
   const [category, setCategory] = useState<string>(initialCategory);
   const [search, setSearch] = useState<string>(initialSearch);
-  const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
-  const [, startTransition] = useTransition();
 
   useEffect(() => {
     async function loadBooks() {
@@ -43,79 +38,50 @@ export function AllBooksView() {
     loadBooks();
   }, [category, search]);
 
-  const displayedBooks = onlyAvailable
-    ? books.filter((b) => b.availableCopies > 0)
-    : books;
-
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
-    startTransition(() => {
-      const params = new URLSearchParams(window.location.search);
-      if (cat === "All") {
-        params.delete("category");
-      } else {
-        params.set("category", cat);
-      }
-      router.replace(`/books?${params.toString()}`);
-    });
-  };
-
-  const resetFilters = () => {
-    setCategory("All");
-    setSearch("");
-    router.replace("/books");
+    const params = new URLSearchParams(window.location.search);
+    if (cat === "All") {
+      params.delete("category");
+    } else {
+      params.set("category", cat);
+    }
+    router.replace(`/books?${params.toString()}`);
   };
 
   return (
     <div className="w-full space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           All Books
         </h1>
-        <p className="text-sm text-muted-foreground mt-1 max-w-lg">
-          Browse through our entire community catalog. Search by title, author,
-          or filter by specific literary category.
+        <p className="text-sm text-muted-foreground mt-1">
+          Everything on the shelf right now.
         </p>
       </div>
 
-      {/* Filter and Search Controls */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        {/* Search Bar */}
-        <div className="relative w-full sm:max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filter and Search Bar Row matching All Books.png */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        {/* Search Input */}
+        <div className="flex-1 max-w-xl">
           <Input
             type="text"
-            placeholder="Search by title or author name..."
+            placeholder="Search by title or author"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 h-11 rounded-xl bg-card border-border shadow-xs"
+            className="h-11 rounded-xl bg-card border-border/80 text-sm px-4 placeholder:text-muted-foreground"
           />
         </div>
 
-        {/* Clear Filters (if active) */}
-        {(category !== "All" || search) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetFilters}
-            className="text-xs text-muted-foreground hover:text-foreground h-9 px-3 rounded-xl gap-1.5 self-start sm:self-auto"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>Reset filters</span>
-          </Button>
-        )}
-      </div>
-
-      {/* Category Pills & Availability Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => handleCategoryChange("All")}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors shrink-0 ${
               category === "All"
-                ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+                ? "bg-primary text-primary-foreground font-semibold"
+                : "border border-border/80 text-muted-foreground hover:text-foreground"
             }`}
           >
             All
@@ -124,29 +90,16 @@ export function AllBooksView() {
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors shrink-0 ${
                 category === cat
-                  ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                  : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+                  ? "bg-primary text-primary-foreground font-semibold"
+                  : "border border-border/80 text-muted-foreground hover:text-foreground"
               }`}
             >
               {cat}
             </button>
           ))}
         </div>
-
-        <button
-          type="button"
-          onClick={() => setOnlyAvailable(!onlyAvailable)}
-          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border shrink-0 flex items-center gap-1.5 ${
-            onlyAvailable
-              ? "bg-primary/20 text-primary border-primary/40 font-semibold"
-              : "bg-card text-muted-foreground border-border hover:text-foreground"
-          }`}
-        >
-          <span className={`h-2 w-2 rounded-full ${onlyAvailable ? "bg-primary" : "bg-muted-foreground/50"}`} />
-          <span>Available to borrow now</span>
-        </button>
       </div>
 
       {/* Books Grid */}
@@ -157,39 +110,25 @@ export function AllBooksView() {
               key={i}
               className="rounded-2xl border border-border p-4 space-y-3 bg-card"
             >
-              <Skeleton className="w-full aspect-[3/4] rounded-xl" />
+              <Skeleton className="w-full aspect-[16/11] rounded-2xl" />
+              <Skeleton className="h-4 w-16 rounded-full" />
               <Skeleton className="h-5 w-3/4 rounded-md" />
               <Skeleton className="h-4 w-1/2 rounded-md" />
               <Skeleton className="h-10 w-full rounded-xl mt-4" />
             </div>
           ))}
         </div>
-      ) : displayedBooks.length > 0 ? (
+      ) : books.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayedBooks.map((book) => (
+          {books.map((book) => (
             <BookCard key={book._id} book={book} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card/40 p-8 flex flex-col items-center justify-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <h3 className="font-semibold text-lg text-foreground">
-            No matching books found
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            We couldn&apos;t find any books matching your search or category filter.
-            Try adjusting your search terms or clearing the filters.
+        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card p-8">
+          <p className="text-sm text-muted-foreground">
+            No matching books found on the shelf.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={resetFilters}
-            className="rounded-xl mt-2 border-border"
-          >
-            Show all books
-          </Button>
         </div>
       )}
     </div>

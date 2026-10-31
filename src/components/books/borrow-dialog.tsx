@@ -7,7 +7,6 @@ import { borrowBook, ApiError } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BookOpen, Calendar, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface BorrowDialogProps {
@@ -34,28 +33,21 @@ export function BorrowDialog({
   const { data: session } = authClient.useSession();
   const [loading, setLoading] = useState(false);
 
-  const returnDateEstimate = new Date();
-  returnDateEstimate.setDate(returnDateEstimate.getDate() + 14);
-  const formattedReturnDate = returnDateEstimate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const userName = session?.user?.name || "Shahjalal Ahmed Nishat";
+  const userEmail = session?.user?.email || "you@example.com";
 
   const handleConfirmBorrow = async () => {
     try {
       setLoading(true);
       await borrowBook(book._id);
-      toast.success(
-        `"${book.title}" borrowed successfully! Please return by ${formattedReturnDate}.`
-      );
+      toast.success(`"${book.title}" borrowed successfully!`);
       onSuccess(book.availableCopies - 1);
       onOpenChange(false);
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         toast.error(err.message);
       } else {
-        toast.error("Failed to borrow book. Please try again.");
+        toast.error("Failed to borrow book.");
       }
     } finally {
       setLoading(false);
@@ -64,69 +56,49 @@ export function BorrowDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-2xl border-border bg-card">
-        <DialogHeader className="text-left">
-          <div className="flex items-center gap-2.5 mb-1 text-primary">
-            <BookOpen className="h-5 w-5" />
-            <DialogTitle className="text-xl font-bold tracking-tight">
-              Confirm Borrow
-            </DialogTitle>
-          </div>
-          <DialogDescription className="text-muted-foreground text-sm">
-            You are requesting to borrow{" "}
-            <span className="font-semibold text-foreground">
-              &quot;{book.title}&quot;
-            </span>{" "}
-            from BookNook.
-          </DialogDescription>
+      <DialogContent className="sm:max-w-md rounded-2xl border border-border/80 bg-[#141416] text-white p-6">
+        <DialogHeader className="text-left space-y-1">
+          <DialogTitle className="text-xl font-bold tracking-tight text-white">
+            Confirm Borrow
+          </DialogTitle>
+          <p className="text-sm text-zinc-400">
+            {book.title} by {book.author}
+          </p>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <div className="space-y-4 py-3">
           <div className="space-y-1.5">
-            <Label htmlFor="borrower-name" className="text-xs text-muted-foreground">
-              Borrower Name
+            <Label htmlFor="borrower-name" className="text-xs text-zinc-300 font-normal">
+              Name
             </Label>
             <Input
               id="borrower-name"
-              value={session?.user?.name || ""}
+              value={userName}
               disabled
-              className="h-10 rounded-xl bg-muted/40 border-border cursor-not-allowed opacity-80 text-sm"
+              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-zinc-200 text-sm"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="borrower-email" className="text-xs text-muted-foreground">
-              Borrower Email
+            <Label htmlFor="borrower-email" className="text-xs text-zinc-300 font-normal">
+              Email
             </Label>
             <Input
               id="borrower-email"
-              value={session?.user?.email || ""}
+              value={userEmail}
               disabled
-              className="h-10 rounded-xl bg-muted/40 border-border cursor-not-allowed opacity-80 text-sm"
+              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-zinc-200 text-sm"
             />
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 flex items-start gap-3">
-            <Calendar className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <div className="text-xs space-y-0.5">
-              <p className="font-semibold text-primary">
-                14-Day Standard Borrow Period
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Due date: {formattedReturnDate}. You can return this book anytime
-                from your &quot;My Borrows&quot; dashboard.
-              </p>
-            </div>
           </div>
         </div>
 
-        <DialogFooter className="flex-row justify-end gap-2 sm:gap-2 pt-2">
+        <DialogFooter className="flex-row justify-end gap-2 pt-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
-            className="rounded-xl h-10 border-border hover:bg-muted font-medium"
+            className="rounded-xl h-11 px-5 border-white/10 bg-transparent text-white hover:bg-white/5 font-normal"
           >
             Cancel
           </Button>
@@ -134,12 +106,12 @@ export function BorrowDialog({
             type="button"
             onClick={handleConfirmBorrow}
             disabled={loading}
-            className="rounded-xl h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+            className="rounded-xl h-11 px-5 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
           >
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Borrowing...</span>
+                <span>Confirming...</span>
               </span>
             ) : (
               "Confirm Borrow"
