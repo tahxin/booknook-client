@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Borrow } from "@/types";
 import { getMyBorrows, returnBook, ApiError } from "@/lib/api";
 import { BookCover } from "@/components/common/book-cover";
-import { EmptyState } from "@/components/common/empty-state";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -16,9 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CornerDownLeft, BookOpen, Clock, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 export function MyBorrowsView() {
   const [borrows, setBorrows] = useState<Borrow[]>([]);
@@ -44,15 +42,13 @@ export function MyBorrowsView() {
     try {
       setReturningId(borrow._id);
       await returnBook(borrow._id);
-      toast.success(
-        `"${borrow.bookTitle}" returned successfully! Thank you for returning on time.`
-      );
+      toast.success(`"${borrow.bookTitle}" returned successfully!`);
       setBorrows((prev) => prev.filter((b) => b._id !== borrow._id));
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         toast.error(err.message);
       } else {
-        toast.error("Failed to return book. Please try again.");
+        toast.error("Failed to return book.");
       }
     } finally {
       setReturningId(null);
@@ -60,15 +56,14 @@ export function MyBorrowsView() {
   };
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           My Borrows
         </h1>
-        <p className="text-sm text-muted-foreground mt-1 max-w-lg">
-          Track books currently checked out on your library card, check due dates,
-          and return books when finished.
+        <p className="text-sm text-muted-foreground mt-1">
+          Books you have on loan. Return them when you are done.
         </p>
       </div>
 
@@ -80,38 +75,51 @@ export function MyBorrowsView() {
           <Skeleton className="h-16 w-full rounded-xl" />
         </div>
       ) : borrows.length > 0 ? (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border/80 bg-card overflow-hidden">
           <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="w-20 pl-6">Cover</TableHead>
-                <TableHead>Book Title</TableHead>
-                <TableHead className="hidden sm:table-cell">Borrow Date</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead className="text-right pr-6">Action</TableHead>
+            <TableHeader className="bg-transparent border-b border-border/60">
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className="w-24 pl-6 text-xs text-muted-foreground font-normal">
+                  Image
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Title
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Borrow Date
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Return Date
+                </TableHead>
+                <TableHead className="text-right pr-6 text-xs text-muted-foreground font-normal">
+                  Action
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {borrows.map((borrow) => {
                 const borrowDate = new Date(borrow.borrowDate).toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "numeric" }
+                  "en-GB",
+                  { day: "numeric", month: "short", year: "numeric" }
                 );
                 const returnDate = new Date(borrow.returnDate).toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "numeric" }
+                  "en-GB",
+                  { day: "numeric", month: "short", year: "numeric" }
                 );
 
                 const isReturning = returningId === borrow._id;
 
                 return (
-                  <TableRow key={borrow._id} className="border-border">
-                    <TableCell className="pl-6 py-3">
-                      <div className="w-12 h-16 rounded-lg overflow-hidden border border-border shrink-0">
+                  <TableRow
+                    key={borrow._id}
+                    className="border-b border-border/60 last:border-0 hover:bg-muted/20"
+                  >
+                    <TableCell className="pl-6 py-4">
+                      <div className="w-10 h-12 rounded-lg overflow-hidden shrink-0">
                         <BookCover
                           title={borrow.bookTitle}
                           image={borrow.bookImage}
-                          aspectRatio="aspect-[3/4]"
+                          aspectRatio="aspect-[5/6]"
                         />
                       </div>
                     </TableCell>
@@ -119,41 +127,33 @@ export function MyBorrowsView() {
                     <TableCell>
                       <Link
                         href={`/books/${borrow.bookId}`}
-                        className="font-semibold text-foreground hover:text-primary transition-colors text-sm line-clamp-1"
+                        className="font-bold text-foreground hover:text-primary transition-colors text-sm"
                       >
                         {borrow.bookTitle}
                       </Link>
                     </TableCell>
 
-                    <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                    <TableCell className="text-xs text-muted-foreground font-normal">
                       {borrowDate}
                     </TableCell>
 
-                    <TableCell>
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{returnDate}</span>
-                      </div>
+                    <TableCell className="text-xs text-muted-foreground font-normal">
+                      {returnDate}
                     </TableCell>
 
                     <TableCell className="text-right pr-6">
                       <Button
-                        variant="outline"
-                        size="sm"
                         disabled={isReturning}
                         onClick={() => handleReturn(borrow)}
-                        className="rounded-xl h-9 px-4 border-border hover:bg-muted font-medium text-xs gap-1.5"
+                        className="rounded-xl h-10 px-5 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs"
                       >
                         {isReturning ? (
-                          <>
+                          <span className="flex items-center gap-1.5">
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             <span>Returning...</span>
-                          </>
+                          </span>
                         ) : (
-                          <>
-                            <CornerDownLeft className="h-3.5 w-3.5 text-primary" />
-                            <span>Return Book</span>
-                          </>
+                          "Return Book"
                         )}
                       </Button>
                     </TableCell>
@@ -164,14 +164,11 @@ export function MyBorrowsView() {
           </Table>
         </div>
       ) : (
-        <EmptyState
-          title="No active borrows"
-          description="You don't have any books currently borrowed. Explore our catalog and check out your next favorite read!"
-          action={{
-            label: "Browse Books",
-            href: "/books",
-          }}
-        />
+        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card p-8">
+          <p className="text-sm text-muted-foreground">
+            No active borrows found.
+          </p>
+        </div>
       )}
     </div>
   );

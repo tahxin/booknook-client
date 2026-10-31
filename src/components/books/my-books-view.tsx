@@ -8,8 +8,7 @@ import { getBooks } from "@/lib/api";
 import { BookCover } from "@/components/common/book-cover";
 import { EditBookDialog } from "./edit-book-dialog";
 import { DeleteBookDialog } from "./delete-book-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -19,8 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit3, Trash2, PlusCircle, BookOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function MyBooksView() {
   const { data: session } = authClient.useSession();
@@ -33,13 +30,14 @@ export function MyBooksView() {
   const [selectedBookForDelete, setSelectedBookForDelete] = useState<Book | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  const userEmail = session?.user?.email || "you@example.com";
+
   useEffect(() => {
     async function loadUserBooks() {
-      if (!session?.user?.email) return;
       try {
         setLoading(true);
         const data = await getBooks({
-          ownerEmail: session.user.email,
+          ownerEmail: userEmail,
         });
         setBooks(data);
       } catch {
@@ -49,7 +47,7 @@ export function MyBooksView() {
       }
     }
     loadUserBooks();
-  }, [session?.user?.email]);
+  }, [userEmail]);
 
   const handleEditClick = (book: Book) => {
     setSelectedBookForEdit(book);
@@ -62,128 +60,108 @@ export function MyBooksView() {
   };
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            My Books
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-lg">
-            Manage books you have contributed to the library, adjust copies, or
-            update descriptions.
-          </p>
-        </div>
-
-        <Link
-          href="/add-book"
-          className={cn(
-            buttonVariants({ variant: "default" }),
-            "h-11 px-5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium inline-flex items-center gap-2 self-start sm:self-auto"
-          )}
-        >
-          <PlusCircle className="h-4 w-4" />
-          <span>Add New Book</span>
-        </Link>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          My Books
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Books you added. Edit or remove them anytime.
+        </p>
       </div>
 
-      {/* Table or Cards */}
+      {/* Table */}
       {loading ? (
         <div className="space-y-4">
           <Skeleton className="h-12 w-full rounded-xl" />
           <Skeleton className="h-16 w-full rounded-xl" />
           <Skeleton className="h-16 w-full rounded-xl" />
-          <Skeleton className="h-16 w-full rounded-xl" />
         </div>
       ) : books.length > 0 ? (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border/80 bg-card overflow-hidden">
           <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="w-20 pl-6">Cover</TableHead>
-                <TableHead>Title & Category</TableHead>
-                <TableHead>Copies</TableHead>
-                <TableHead className="hidden md:table-cell">Date Added</TableHead>
-                <TableHead className="text-right pr-6">Actions</TableHead>
+            <TableHeader className="bg-transparent border-b border-border/60">
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className="w-24 pl-6 text-xs text-muted-foreground font-normal">
+                  Cover
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Title
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Copies
+                </TableHead>
+                <TableHead className="text-xs text-muted-foreground font-normal">
+                  Added
+                </TableHead>
+                <TableHead className="text-right pr-6 text-xs text-muted-foreground font-normal">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {books.map((book) => {
                 const formattedDate = new Date(book.createdAt).toLocaleDateString(
-                  "en-US",
-                  { month: "short", day: "numeric", year: "numeric" }
+                  "en-GB",
+                  { day: "numeric", month: "short" }
                 );
 
                 return (
-                  <TableRow key={book._id} className="border-border">
-                    <TableCell className="pl-6 py-3">
-                      <div className="w-12 h-16 rounded-lg overflow-hidden border border-border shrink-0">
+                  <TableRow
+                    key={book._id}
+                    className="border-b border-border/60 last:border-0 hover:bg-muted/20"
+                  >
+                    <TableCell className="pl-6 py-4">
+                      <div className="w-10 h-12 rounded-lg overflow-hidden shrink-0">
                         <BookCover
                           title={book.title}
                           image={book.image}
-                          aspectRatio="aspect-[3/4]"
+                          aspectRatio="aspect-[5/6]"
                         />
                       </div>
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col">
                         <Link
                           href={`/books/${book._id}`}
-                          className="font-semibold text-foreground hover:text-primary transition-colors text-sm"
+                          className="font-bold text-foreground hover:text-primary transition-colors text-sm"
                         >
                           {book.title}
                         </Link>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">
-                            by {book.author}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] py-0 px-2 rounded-full border-border"
-                          >
-                            {book.category}
-                          </Badge>
-                        </div>
-                      </div>
-                    </TableCell>
-
-                    <TableCell>
-                      <div className="text-xs font-medium">
-                        <span className="text-primary font-semibold">
-                          {book.availableCopies}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {" "}
-                          / {book.totalCopies} available
+                        <span className="text-xs text-muted-foreground">
+                          {book.category}
                         </span>
                       </div>
                     </TableCell>
 
-                    <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
-                      {formattedDate}
+                    <TableCell className="text-xs text-muted-foreground font-normal">
+                      {book.totalCopies} copies
+                    </TableCell>
+
+                    <TableCell className="text-xs text-muted-foreground font-normal">
+                      Added {formattedDate}
                     </TableCell>
 
                     <TableCell className="text-right pr-6">
                       <div className="flex items-center justify-end gap-2">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleEditClick(book)}
-                          className="h-9 px-3 rounded-xl border border-border hover:bg-muted text-foreground text-xs gap-1.5"
+                          className="h-8 px-4 rounded-xl border-border/80 hover:bg-muted text-foreground text-xs font-normal"
                         >
-                          <Edit3 className="h-3.5 w-3.5 text-primary" />
-                          <span>Edit</span>
+                          Edit
                         </Button>
 
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleDeleteClick(book)}
-                          className="h-9 px-3 rounded-xl border border-border hover:bg-destructive/10 text-destructive text-xs gap-1.5"
+                          className="h-8 px-4 rounded-xl border-border/80 hover:bg-muted text-[#f87171] text-xs font-normal"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Delete</span>
+                          Delete
                         </Button>
                       </div>
                     </TableCell>
@@ -194,26 +172,10 @@ export function MyBooksView() {
           </Table>
         </div>
       ) : (
-        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card/40 p-8 flex flex-col items-center justify-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <h3 className="font-semibold text-lg text-foreground">
-            No books contributed yet
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            You haven&apos;t added any books to BookNook yet. Share a title from
-            your collection to help grow the community library!
+        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card p-8">
+          <p className="text-sm text-muted-foreground">
+            No books added yet.
           </p>
-          <Link
-            href="/add-book"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "rounded-xl mt-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-            )}
-          >
-            Add Your First Book
-          </Link>
         </div>
       )}
 

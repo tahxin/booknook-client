@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface DeleteBookDialogProps {
@@ -36,14 +36,14 @@ export function DeleteBookDialog({
     try {
       setDeleting(true);
       await deleteBook(book._id);
-      toast.success(`"${book.title}" was removed from your catalog.`);
+      toast.success(`"${book.title}" was removed.`);
       onSuccess(book._id);
       onOpenChange(false);
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         toast.error(err.message);
       } else {
-        toast.error("Failed to delete book. Please try again.");
+        toast.error("Failed to delete book.");
       }
     } finally {
       setDeleting(false);
@@ -52,21 +52,13 @@ export function DeleteBookDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="sm:max-w-md rounded-2xl border-border bg-card">
-        <AlertDialogHeader className="text-left">
-          <div className="flex items-center gap-2.5 mb-1 text-destructive">
-            <Trash2 className="h-5 w-5" />
-            <AlertDialogTitle className="text-xl font-bold tracking-tight">
-              Delete this book?
-            </AlertDialogTitle>
-          </div>
-          <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
-            Are you sure you want to delete{" "}
-            <span className="font-semibold text-foreground">
-              &quot;{book.title}&quot;
-            </span>
-            ? This action cannot be undone and will permanently remove this entry
-            from the library archive.
+      <AlertDialogContent className="sm:max-w-md rounded-2xl border border-white/10 bg-[#141416] text-white p-6">
+        <AlertDialogHeader className="text-left space-y-2">
+          <AlertDialogTitle className="text-xl font-bold tracking-tight text-white">
+            Delete this book?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-sm text-zinc-400 leading-relaxed">
+            {book.title} will be removed from the library. This cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -76,7 +68,7 @@ export function DeleteBookDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={deleting}
-            className="rounded-xl h-10 border-border"
+            className="rounded-xl h-10 px-5 border-white/10 bg-transparent text-white hover:bg-white/5 font-normal"
           >
             Cancel
           </Button>
@@ -84,7 +76,7 @@ export function DeleteBookDialog({
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="rounded-xl h-10 bg-destructive text-destructive-foreground hover:bg-destructive/90 font-medium"
+            className="rounded-xl h-10 px-5 bg-[#f87171] text-zinc-950 hover:bg-[#ef4444] font-medium"
           >
             {deleting ? (
               <span className="flex items-center gap-2">
