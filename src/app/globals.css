@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -27,6 +26,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -64,8 +64,9 @@
   --accent: #f3efe6;
   --accent-foreground: #18181b;
   --destructive: #dc2626;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: rgba(0, 0, 0, 0.1);
+  --destructive-foreground: #ffffff;
+  --border: #e6e3dc;
+  --input: #e6e3dc;
   --ring: #d9930d;
   --chart-1: #f5b942;
   --chart-2: #52525b;
@@ -91,6 +92,7 @@
   --accent: #222228;
   --accent-foreground: #f4f4f5;
   --destructive: #f87171;
+  --destructive-foreground: #18181b;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
   --ring: #f5b942;

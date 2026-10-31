@@ -51,7 +51,7 @@ export function HeroSlider() {
   if (!mounted) {
     const slide = slides[0];
     return (
-      <div className="relative w-full rounded-3xl border border-border/80 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
+      <div className="relative w-full rounded-3xl border border-border/80 bg-card/40 dark:bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
         <div className="w-full relative pb-8">
           <div className="max-w-2xl flex flex-col items-start gap-6 select-none">
             <div className="rounded-full px-3.5 py-1 text-xs text-muted-foreground border border-border/80 bg-background/40">
@@ -77,7 +77,7 @@ export function HeroSlider() {
                 href={slide.secondaryAction.href}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "h-11 px-6 rounded-xl border-border bg-card/60 hover:bg-muted font-medium text-foreground"
+                  "h-11 px-6 rounded-xl border-border bg-card hover:bg-muted font-medium text-foreground"
                 )}
               >
                 {slide.secondaryAction.label}
@@ -86,8 +86,8 @@ export function HeroSlider() {
           </div>
           <div className="mt-8 flex items-center gap-2">
             <span className="w-8 h-1 rounded-full bg-[#f5b942]" />
-            <span className="w-4 h-1 rounded-full bg-muted-foreground/30" />
-            <span className="w-4 h-1 rounded-full bg-muted-foreground/30" />
+            <span className="w-4 h-1 rounded-full bg-black/20 dark:bg-white/20" />
+            <span className="w-4 h-1 rounded-full bg-black/20 dark:bg-white/20" />
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ export function HeroSlider() {
   }
 
   return (
-    <div className="relative w-full rounded-3xl border border-border/80 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
+    <div className="relative w-full rounded-3xl border border-border/80 bg-card/40 dark:bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"
@@ -149,7 +149,7 @@ export function HeroSlider() {
                   href={slide.secondaryAction.href}
                   className={cn(
                     buttonVariants({ variant: "outline" }),
-                    "h-11 px-6 rounded-xl border-border bg-card/60 hover:bg-muted font-medium text-foreground"
+                    "h-11 px-6 rounded-xl border-border bg-card hover:bg-muted font-medium text-foreground"
                   )}
                 >
                   {slide.secondaryAction.label}

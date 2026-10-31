@@ -34,7 +34,7 @@ export function HowItWorks() {
             key={step.number}
             className="rounded-2xl border border-border/80 bg-card p-6 flex flex-col items-start gap-4"
           >
-            <div className="rounded-full px-3 py-0.5 text-xs font-normal text-muted-foreground border border-border">
+            <div className="rounded-full px-2.5 py-0.5 text-xs font-semibold text-[#b45309] dark:text-[#f5b942] border border-[#f5b942]/60 dark:border-white/10">
               {step.number}
             </div>
 

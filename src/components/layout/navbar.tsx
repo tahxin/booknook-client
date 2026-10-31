@@ -81,7 +81,7 @@ export function Navbar() {
   return (
     <header className="sticky top-4 z-50 w-full px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-card/90 dark:bg-[#141416]/95 border border-border/80 dark:border-white/10 shadow-sm backdrop-blur-md">
+        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-white dark:bg-[#141416]/95 border border-border dark:border-white/10 shadow-sm backdrop-blur-md">
           {/* Brand Logo */}
           <Link
             href="/"
@@ -105,7 +105,7 @@ export function Navbar() {
                   href={link.href}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     isActive
-                      ? "bg-zinc-200 text-zinc-900 dark:bg-[#26262a] dark:text-white"
+                      ? "bg-[#ececec] text-zinc-900 dark:bg-[#26262a] dark:text-white"
                       : "text-muted-foreground hover:text-foreground dark:text-zinc-400 dark:hover:text-white"
                   }`}
                 >
@@ -225,7 +225,7 @@ export function Navbar() {
                         onClick={() => setMobileOpen(false)}
                         className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                           isActive
-                            ? "bg-zinc-200 text-zinc-900 dark:bg-[#26262a] dark:text-white"
+                            ? "bg-[#ececec] text-zinc-900 dark:bg-[#26262a] dark:text-white"
                             : "text-muted-foreground hover:bg-muted"
                         }`}
                       >
