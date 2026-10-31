@@ -20,6 +20,7 @@ export function AllBooksView() {
 
   const [category, setCategory] = useState<string>(initialCategory);
   const [search, setSearch] = useState<string>(initialSearch);
+  const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [, startTransition] = useTransition();
@@ -41,6 +42,10 @@ export function AllBooksView() {
     }
     loadBooks();
   }, [category, search]);
+
+  const displayedBooks = onlyAvailable
+    ? books.filter((b) => b.availableCopies > 0)
+    : books;
 
   const handleCategoryChange = (cat: string) => {
     setCategory(cat);
@@ -102,31 +107,46 @@ export function AllBooksView() {
         )}
       </div>
 
-      {/* Category Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button
-          onClick={() => handleCategoryChange("All")}
-          className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
-            category === "All"
-              ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-              : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
-          }`}
-        >
-          All
-        </button>
-        {CATEGORIES.map((cat) => (
+      {/* Category Pills & Availability Toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
-            key={cat}
-            onClick={() => handleCategoryChange(cat)}
+            onClick={() => handleCategoryChange("All")}
             className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
-              category === cat
+              category === "All"
                 ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                 : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
             }`}
           >
-            {cat}
+            All
           </button>
-        ))}
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
+                category === cat
+                  ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                  : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setOnlyAvailable(!onlyAvailable)}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border shrink-0 flex items-center gap-1.5 ${
+            onlyAvailable
+              ? "bg-primary/20 text-primary border-primary/40 font-semibold"
+              : "bg-card text-muted-foreground border-border hover:text-foreground"
+          }`}
+        >
+          <span className={`h-2 w-2 rounded-full ${onlyAvailable ? "bg-primary" : "bg-muted-foreground/50"}`} />
+          <span>Available to borrow now</span>
+        </button>
       </div>
 
       {/* Books Grid */}
@@ -144,9 +164,9 @@ export function AllBooksView() {
             </div>
           ))}
         </div>
-      ) : books.length > 0 ? (
+      ) : displayedBooks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {books.map((book) => (
+          {displayedBooks.map((book) => (
             <BookCard key={book._id} book={book} />
           ))}
         </div>
