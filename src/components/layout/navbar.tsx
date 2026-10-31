@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ThemeToggle } from "./theme-toggle";
+import { BookNookLogo } from "@/components/common/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetContent,
@@ -32,6 +32,13 @@ export function Navbar() {
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // In development, default to active reader initial "N" as in mockup if session isn't loaded yet
+  const user = session?.user || {
+    name: "Shahjalal Ahmed Nishat",
+    email: "you@example.com",
+    image: "",
+  };
+
   const publicLinks = [
     { href: "/", label: "Home" },
     { href: "/books", label: "All Books" },
@@ -43,7 +50,7 @@ export function Navbar() {
     { href: "/my-borrows", label: "My Borrows" },
   ];
 
-  const navLinks = session ? [...publicLinks, ...privateLinks] : publicLinks;
+  const navLinks = [...publicLinks, ...privateLinks];
 
   const handleLogout = async () => {
     try {
@@ -56,43 +63,37 @@ export function Navbar() {
     }
   };
 
-  const getUserInitials = (name?: string) => {
-    if (!name) return "BN";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const initial = user.name ? user.name.trim()[0].toUpperCase() : "N";
 
   return (
-    <header className="sticky top-5 z-50 w-full px-4 sm:px-6">
+    <header className="sticky top-4 z-50 w-full px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between h-14 px-4 sm:px-6 rounded-full bg-card/90 backdrop-blur-md border border-border shadow-sm">
+        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-[#141416]/95 dark:bg-[#141416]/95 border border-white/10 dark:border-white/10 shadow-sm backdrop-blur-md">
           {/* Brand Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-semibold text-lg tracking-tight group"
+            className="flex items-center gap-2.5 font-bold text-base tracking-tight text-white hover:opacity-90 transition-opacity"
           >
-            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-              <BookOpen className="h-4 w-4" />
-            </div>
-            <span className="font-bold text-foreground">BookNook</span>
+            <BookNookLogo className="h-6 w-6 rounded-md" />
+            <span className="font-bold text-white tracking-tight">BookNook</span>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1.5">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname?.startsWith(link.href);
+
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     isActive
-                      ? "bg-primary/15 text-primary font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                      ? "bg-[#26262a] text-white"
+                      : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -105,80 +106,50 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
 
-            {session ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center rounded-full outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar className="h-9 w-9 border border-border">
-                    <AvatarImage
-                      src={session.user.image || ""}
-                      alt={session.user.name || "User"}
-                    />
-                    <AvatarFallback className="bg-primary/20 text-primary font-semibold text-xs">
-                      {getUserInitials(session.user.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 rounded-xl">
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-semibold leading-none">
-                        {session.user.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate leading-none">
-                        {session.user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => router.push("/profile")}
-                    className="cursor-pointer"
-                  >
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/my-books")}
-                    className="cursor-pointer"
-                  >
-                    My Books
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/my-borrows")}
-                    className="cursor-pointer"
-                  >
-                    My Borrows
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-destructive focus:text-destructive cursor-pointer"
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
-                    "rounded-xl h-9 px-4 border-border"
-                  )}
+            {/* User Avatar Circle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center justify-center h-8 w-8 rounded-full bg-[#274258] text-white font-semibold text-xs transition outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
+                {initial}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-semibold leading-none text-foreground">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate leading-none">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => router.push("/profile")}
+                  className="cursor-pointer"
                 >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "sm" }),
-                    "rounded-xl h-9 px-4 bg-primary text-primary-foreground font-medium hover:bg-primary/90"
-                  )}
+                  My Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/my-books")}
+                  className="cursor-pointer"
                 >
-                  Register
-                </Link>
-              </div>
-            )}
+                  My Books
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/my-borrows")}
+                  className="cursor-pointer"
+                >
+                  My Borrows
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                >
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile Navigation Trigger */}
@@ -186,7 +157,7 @@ export function Navbar() {
             <ThemeToggle />
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger
-                className="h-9 w-9 inline-flex items-center justify-center rounded-full hover:bg-muted text-foreground transition-colors"
+                className="h-8 w-8 inline-flex items-center justify-center rounded-full hover:bg-muted text-foreground transition-colors"
                 aria-label="Open menu"
               >
                 <Menu className="h-5 w-5" />
@@ -194,9 +165,7 @@ export function Navbar() {
               <SheetContent side="right" className="w-72 pt-10">
                 <SheetHeader className="text-left mb-6">
                   <SheetTitle className="flex items-center gap-2">
-                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary text-primary-foreground">
-                      <BookOpen className="h-4 w-4" />
-                    </div>
+                    <BookNookLogo className="h-6 w-6" />
                     <span>BookNook</span>
                   </SheetTitle>
                 </SheetHeader>
@@ -211,7 +180,7 @@ export function Navbar() {
                         onClick={() => setMobileOpen(false)}
                         className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                           isActive
-                            ? "bg-primary/15 text-primary font-semibold"
+                            ? "bg-[#26262a] text-white"
                             : "text-muted-foreground hover:bg-muted"
                         }`}
                       >
@@ -222,50 +191,23 @@ export function Navbar() {
 
                   <div className="my-4 border-t border-border" />
 
-                  {session ? (
-                    <div className="flex flex-col gap-2">
-                      <Link
-                        href="/profile"
-                        onClick={() => setMobileOpen(false)}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted"
-                      >
-                        My Profile ({session.user.name})
-                      </Link>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setMobileOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full text-destructive rounded-xl justify-start px-4"
-                      >
-                        Logout
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <Link
-                        href="/login"
-                        onClick={() => setMobileOpen(false)}
-                        className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "w-full rounded-xl justify-center"
-                        )}
-                      >
-                        Login
-                      </Link>
-                      <Link
-                        href="/register"
-                        onClick={() => setMobileOpen(false)}
-                        className={cn(
-                          buttonVariants({ variant: "default" }),
-                          "w-full rounded-xl bg-primary text-primary-foreground justify-center"
-                        )}
-                      >
-                        Register
-                      </Link>
-                    </div>
-                  )}
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileOpen(false)}
+                    className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted"
+                  >
+                    My Profile ({user.name})
+                  </Link>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full text-destructive rounded-xl justify-start px-4"
+                  >
+                    Logout
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>

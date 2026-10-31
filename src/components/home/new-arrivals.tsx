@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
 import { Book } from "@/types";
 import { getBooks } from "@/lib/api";
 import { BookCard } from "@/components/books/book-card";
@@ -29,31 +28,14 @@ export function NewArrivals() {
   }, []);
 
   return (
-    <section className="w-full flex flex-col gap-8">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-primary text-xs font-semibold uppercase tracking-wider mb-2">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Fresh On The Shelf</span>
-          </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground">
-            New Arrivals
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-lg">
-            Explore recently cataloged books ready to be borrowed by curious readers.
-          </p>
-        </div>
-
-        <Link
-          href="/books"
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "sm" }),
-            "text-primary hover:text-primary font-medium hover:bg-primary/10 rounded-xl hidden sm:flex items-center gap-1.5"
-          )}
-        >
-          <span>View all catalog</span>
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+    <section className="w-full flex flex-col gap-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          New Arrivals
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          The latest books added to the shelf.
+        </p>
       </div>
 
       {loading ? (
@@ -63,7 +45,8 @@ export function NewArrivals() {
               key={i}
               className="rounded-2xl border border-border p-4 space-y-3 bg-card"
             >
-              <Skeleton className="w-full aspect-[3/4] rounded-xl" />
+              <Skeleton className="w-full aspect-[16/11] rounded-2xl" />
+              <Skeleton className="h-4 w-16 rounded-full" />
               <Skeleton className="h-5 w-3/4 rounded-md" />
               <Skeleton className="h-4 w-1/2 rounded-md" />
               <Skeleton className="h-10 w-full rounded-xl mt-4" />
@@ -76,24 +59,17 @@ export function NewArrivals() {
             <BookCard key={book._id} book={book} />
           ))}
         </div>
-      ) : (
-        <div className="text-center py-12 rounded-2xl border border-dashed border-border p-8">
-          <p className="text-muted-foreground text-sm">
-            No books found in the catalog. Be the first to add one!
-          </p>
-        </div>
-      )}
+      ) : null}
 
       <div className="flex justify-center pt-2">
         <Link
           href="/books"
           className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-11 px-8 rounded-xl border-border hover:bg-muted font-medium flex items-center gap-2"
+            buttonVariants({ variant: "default" }),
+            "h-11 px-8 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm"
           )}
         >
-          <span>See All Books</span>
-          <ArrowRight className="h-4 w-4" />
+          See All Books
         </Link>
       </div>
     </section>

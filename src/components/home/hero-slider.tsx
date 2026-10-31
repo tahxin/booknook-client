@@ -4,8 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
-import { ArrowRight, BookOpen, Sparkles, RefreshCw } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -17,38 +15,35 @@ export function HeroSlider() {
   const slides = [
     {
       id: 1,
-      chip: "COMMUNITY ARCHIVE",
-      icon: BookOpen,
-      title: "A small library for curious readers",
+      badge: "Add a book, borrow a book, return a book",
+      title: "A small library for\ncurious readers",
       description:
-        "Borrow hand-curated classics, deep scientific treatises, and everyday stories. No late fees, no clutter, just thoughtful reading.",
+        "Browse what others shared, borrow for a few days, and pass on your own favorites.",
       primaryAction: { label: "Browse Books", href: "/books" },
-      secondaryAction: { label: "How It Works", href: "#how-it-works" },
+      secondaryAction: { label: "Add a Book", href: "/add-book" },
     },
     {
       id: 2,
-      chip: "SHARE & CONTRIBUTE",
-      icon: Sparkles,
-      title: "Share a book, make someone's week",
+      badge: "Community-driven borrowing",
+      title: "Share a book, make\nsomeone's week",
       description:
-        "Have books resting on your shelf? Add them to BookNook and let fellow bibliophiles borrow and cherish them with full tracking.",
-      primaryAction: { label: "Add to Catalog", href: "/add-book" },
-      secondaryAction: { label: "View Collection", href: "/books" },
+        "Have books resting on your shelf? Put them in the shared catalog and let others read them.",
+      primaryAction: { label: "Browse Books", href: "/books" },
+      secondaryAction: { label: "Add a Book", href: "/add-book" },
     },
     {
       id: 3,
-      chip: "SEAMLESS CIRCULATION",
-      icon: RefreshCw,
-      title: "Borrow today, return when you are done",
+      badge: "Simple and transparent",
+      title: "Borrow today, return\nwhen you are done",
       description:
-        "Check out up to 14 days with real-time copy tracking and instant one-click returns. Simple library science made effortless.",
-      primaryAction: { label: "Explore Books", href: "/books" },
-      secondaryAction: { label: "My Borrowed Books", href: "/my-borrows" },
+        "Check out up to 14 days with real-time copy tracking and instant one-click returns.",
+      primaryAction: { label: "Browse Books", href: "/books" },
+      secondaryAction: { label: "Add a Book", href: "/add-book" },
     },
   ];
 
   return (
-    <div className="relative w-full rounded-3xl border border-border bg-card/60 backdrop-blur-sm hero-dotted-grid p-6 sm:p-10 md:p-16 overflow-hidden shadow-sm">
+    <div className="relative w-full rounded-3xl border border-white/10 dark:border-white/10 bg-card/90 hero-dotted-grid p-8 sm:p-12 md:p-16 overflow-hidden">
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"
@@ -63,58 +58,54 @@ export function HeroSlider() {
         pagination={{
           clickable: true,
           renderBullet: function (_index, className) {
-            return `<span class="${className} custom-bullet"></span>`;
+            return `<span class="${className} hero-bullet"></span>`;
           },
         }}
-        className="w-full relative pb-10"
+        className="w-full relative pb-8"
       >
-        {slides.map((slide) => {
-          const Icon = slide.icon;
-          return (
-            <SwiperSlide key={slide.id}>
-              <div className="max-w-3xl flex flex-col items-start gap-6 select-none">
-                <Badge
-                  variant="outline"
-                  className="rounded-full px-3.5 py-1 text-xs font-semibold tracking-wider text-primary border-primary/30 bg-primary/10 flex items-center gap-1.5"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{slide.chip}</span>
-                </Badge>
-
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight leading-[1.08] text-foreground text-left">
-                  {slide.title}
-                </h1>
-
-                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl text-left">
-                  {slide.description}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <Link
-                    href={slide.primaryAction.href}
-                    className={cn(
-                      buttonVariants({ variant: "default" }),
-                      "h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium flex items-center gap-2"
-                    )}
-                  >
-                    <span>{slide.primaryAction.label}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-
-                  <Link
-                    href={slide.secondaryAction.href}
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "h-11 px-6 rounded-xl border-border hover:bg-muted font-medium"
-                    )}
-                  >
-                    {slide.secondaryAction.label}
-                  </Link>
-                </div>
+        {slides.map((slide) => (
+          <SwiperSlide key={slide.id}>
+            <div className="max-w-2xl flex flex-col items-start gap-6 select-none">
+              {/* Top pill */}
+              <div className="rounded-full px-3.5 py-1 text-xs text-muted-foreground border border-border/80 bg-background/40">
+                {slide.badge}
               </div>
-            </SwiperSlide>
-          );
-        })}
+
+              {/* Title */}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.08] whitespace-pre-line text-left">
+                {slide.title}
+              </h1>
+
+              {/* Description */}
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl text-left">
+                {slide.description}
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Link
+                  href={slide.primaryAction.href}
+                  className={cn(
+                    buttonVariants({ variant: "default" }),
+                    "h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+                  )}
+                >
+                  {slide.primaryAction.label}
+                </Link>
+
+                <Link
+                  href={slide.secondaryAction.href}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "h-11 px-6 rounded-xl border-border bg-card/60 hover:bg-muted font-medium text-foreground"
+                  )}
+                >
+                  {slide.secondaryAction.label}
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
 
       <style jsx global>{`
@@ -123,9 +114,9 @@ export function HeroSlider() {
           margin-top: 2rem !important;
           text-align: left !important;
         }
-        .custom-bullet {
+        .hero-bullet {
           display: inline-block;
-          width: 24px;
+          width: 16px;
           height: 4px;
           border-radius: 9999px;
           background: rgba(255, 255, 255, 0.2);
@@ -133,12 +124,12 @@ export function HeroSlider() {
           transition: all 0.3s ease;
           cursor: pointer;
         }
-        :root:not(.dark) .custom-bullet {
+        :root:not(.dark) .hero-bullet {
           background: rgba(0, 0, 0, 0.2);
         }
-        .swiper-pagination-bullet-active.custom-bullet {
-          width: 48px;
-          background: var(--primary) !important;
+        .swiper-pagination-bullet-active.hero-bullet {
+          width: 32px;
+          background: #f5b942 !important;
         }
       `}</style>
     </div>
