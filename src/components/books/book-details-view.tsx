@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Spinner } from "@/components/common/spinner";
 import { BorrowDialog } from "./borrow-dialog";
+import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -89,26 +90,34 @@ export function BookDetailsView({ id }: BookDetailsViewProps) {
   });
 
   return (
-    <div className="w-full space-y-8">
-      {/* Navigation Breadcrumb / Back Button */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/books"
-          className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Back to All Books</span>
-        </Link>
+    <div className="w-full space-y-6">
+      {/* Breadcrumbs & Navigation */}
+      <div>
+        <Breadcrumbs
+          items={[
+            { label: "All Books", href: "/books" },
+            { label: book.title },
+          ]}
+        />
+        <div className="flex items-center justify-between">
+          <Link
+            href="/books"
+            className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to All Books</span>
+          </Link>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleShare}
-          className="h-8 px-3 rounded-full border border-border text-xs gap-1.5 text-muted-foreground hover:text-foreground"
-        >
-          <Share2 className="h-3.5 w-3.5 text-primary" />
-          <span>Share</span>
-        </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShare}
+            className="h-8 px-3 rounded-full border border-border text-xs gap-1.5 text-muted-foreground hover:text-foreground"
+          >
+            <Share2 className="h-3.5 w-3.5 text-primary" />
+            <span>Share</span>
+          </Button>
+        </div>
       </div>
 
       {/* Main Two-Column View */}
