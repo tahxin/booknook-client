@@ -185,10 +185,15 @@ Table (cards on mobile): cover thumb, title + category, copies, added date, **Ed
 Table: Image, Title, Borrow Date, Due Date, **Return Book** button. Return → `DELETE /borrows/:id`, removes row, shows toast, and increments copies. Reusable empty state if no books are borrowed.
 
 ### Login `/login` and Register `/register`
-Centered card, title, form.
-- Login: Email, Password, Login button, visual "Forgot password?" (disabled per spec), **Continue with Google**, link to Register. Success → `callbackUrl` or `/`. Failure → toast + inline error.
-- Register: Name, Email, Photo URL, Password, Register button, Google button, link to Login. Success → navigate to `/login` (toast success).
-- **Password rules** (client-side, blocks submit): at least one uppercase, at least one lowercase, length ≥ 6. Live checklist under the field (met rules turn amber).
+Centered card, title, form matching `Register.png` and design language.
+- Login: Email, Password, Login button, visual "Forgot password?" (disabled per spec), **Continue with Google**, link to Register.
+- Register: Name, Email, Photo URL, Password, Register button, Google button, link to Login.
+- **Smart Redirection**:
+  - If navigated to directly, successful login/register redirects to the **homepage (`/`)**.
+  - If prompted to log in (e.g., from `/add-book`, `/books/[id]`, or private routes), the origin route is preserved in `?callbackUrl=...` and redirected upon authentication.
+  - Toggling between Login and Register retains the `callbackUrl` query parameter.
+  - If an already authenticated user accesses `/login` or `/register`, they are redirected immediately to `callbackUrl` or `/`.
+- **Password rules** (client-side, blocks submit): at least one uppercase, at least one lowercase, length ≥ 6. Live checklist under the field (met rules turn amber: `✓ One uppercase letter`, `✓ One lowercase letter`, `○ At least 6 characters`).
 
 ### My Profile `/profile` (private)
 Card with user photo, email (read-only), and an editable form for **Name** and **Photo URL**. **Save Changes** calls `authClient.updateUser({ name, image })`, shows success toast, and refreshes JWT so avatar updates immediately.

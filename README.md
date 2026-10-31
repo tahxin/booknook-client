@@ -18,6 +18,8 @@ Welcome to **BookNook**, a minimal, community-driven online library platform. Bo
 1. **Authentication & Authorization**:
    - Integrated with **BetterAuth** supporting Email/Password and Google OAuth.
    - Real-time client-side password verification rules (uppercase, lowercase, minimum 6 characters).
+   - **Smart Redirection**: Redirects back to the origin page when prompted to log in (e.g. from `/books/[id]`, `/add-book`, etc.) or to the homepage (`/`) upon direct login or register.
+   - Cross-form redirect parameter preservation between Login and Register views.
    - Secure JWT token generation for protected backend API requests.
    - Route protection with zero redirect flickering on page refresh for authenticated readers.
 
