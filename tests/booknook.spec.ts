@@ -14,7 +14,7 @@ test.describe("BookNook Client End-to-End Tests", () => {
     await expect(brand).toBeVisible();
 
     // Verify Hero title
-    const heroTitle = page.getByRole("heading", { level: 1 });
+    const heroTitle = page.getByRole("heading", { level: 1 }).first();
     await expect(heroTitle).toBeVisible();
 
     // Verify New Arrivals section
@@ -60,7 +60,7 @@ test.describe("BookNook Client End-to-End Tests", () => {
     ).toBeVisible();
 
     // Verify search input
-    const searchInput = page.getByPlaceholder(/Search by title or author/i);
+    const searchInput = page.getByPlaceholder(/Search by title or author/i).first();
     await expect(searchInput).toBeVisible();
 
     // Type a query
@@ -68,7 +68,7 @@ test.describe("BookNook Client End-to-End Tests", () => {
     await page.waitForTimeout(400);
 
     // Verify filtered card is shown
-    await expect(page.getByText("To Kill a Mockingbird")).toBeVisible();
+    await expect(page.getByText("To Kill a Mockingbird").first()).toBeVisible();
   });
 
   test("Registration form shows real-time password requirement checklist", async ({
@@ -80,25 +80,26 @@ test.describe("BookNook Client End-to-End Tests", () => {
     await expect(page).toHaveTitle(/BookNook \| Register/);
 
     // Verify password checklist text
-    await expect(page.getByText("Password requirements:")).toBeVisible();
+    await expect(page.getByText("Password requirements:").first()).toBeVisible();
     await expect(
-      page.getByText("At least one uppercase letter (A-Z)")
+      page.getByText("At least one uppercase letter (A-Z)").first()
     ).toBeVisible();
     await expect(
-      page.getByText("At least one lowercase letter (a-z)")
+      page.getByText("At least one lowercase letter (a-z)").first()
     ).toBeVisible();
-    await expect(page.getByText("Minimum 6 characters in length")).toBeVisible();
+    await expect(page.getByText("Minimum 6 characters in length").first()).toBeVisible();
 
-    // Fill invalid password
-    const passwordInput = page.locator("#password");
-    await passwordInput.fill("simple");
+    // Fill form with invalid password (missing uppercase)
+    await page.locator("#name").first().fill("Test Reader");
+    await page.locator("#email").first().fill("test@example.com");
+    await page.locator("#password").first().fill("simple");
 
     // Submit button
-    const submitBtn = page.getByRole("button", { name: "Register" });
+    const submitBtn = page.getByRole("button", { name: "Register" }).first();
     await submitBtn.click();
 
-    // Checklist uppercase rule should not be satisfied
-    await expect(page.locator("text=Password must include")).toBeVisible();
+    // Checklist uppercase rule should trigger error
+    await expect(page.getByText("Password must include at least one uppercase letter.").first()).toBeVisible();
   });
 
   test("Custom 404 page renders for invalid routes", async ({ page }) => {
