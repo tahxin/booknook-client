@@ -45,23 +45,24 @@ export function Navbar() {
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // In development, default to active reader initial "N" as in mockup if session isn't loaded yet
-  const user = session?.user || {
-    name: "Shahjalal Ahmed Nishat",
-    email: "you@example.com",
-    image: "",
-  };
+  const user = session?.user;
 
   const publicLinks = [
     { href: "/", label: "Home" },
     { href: "/books", label: "All Books" },
   ];
 
-  const privateLinks = [
-    { href: "/add-book", label: "Add Book" },
-    { href: "/my-books", label: "My Books" },
-    { href: "/my-borrows", label: "My Borrows" },
-  ];
+  const privateLinks = user
+    ? [
+        { href: "/add-book", label: "Add Book" },
+        { href: "/my-books", label: "My Books" },
+        { href: "/my-borrows", label: "My Borrows" },
+      ]
+    : [
+        { href: "/add-book", label: "Add Book" },
+        { href: "/my-books", label: "My Books" },
+        { href: "/my-borrows", label: "My Borrows" },
+      ];
 
   const navLinks = [...publicLinks, ...privateLinks];
 
@@ -76,7 +77,7 @@ export function Navbar() {
     }
   };
 
-  const initial = user.name ? user.name.trim()[0].toUpperCase() : "N";
+  const initial = user?.name ? user.name.trim()[0].toUpperCase() : "U";
 
   return (
     <header className="sticky top-4 z-50 w-full px-4 sm:px-6">
@@ -119,82 +120,106 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
 
-            {/* Profile Dropdown with Avatar */}
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    aria-label="Open account menu"
-                    size="icon"
-                    variant="ghost"
-                    className="rounded-full size-8 p-0 ring-offset-background transition outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
-                }
-              >
-                <Avatar className="size-8">
-                  {user.image ? (
-                    <AvatarImage alt={user.name} src={user.image} />
-                  ) : (
-                    <AvatarImage alt={user.name} src="https://github.com/shadcn.png" />
-                  )}
-                  <AvatarFallback className="bg-[#274258] text-white font-semibold text-xs">
-                    {initial}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border p-1">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="font-normal px-2 py-1.5">
-                    <div className="flex flex-col gap-1">
-                      <p className="font-medium text-foreground text-sm leading-none">
-                        {user.name}
-                      </p>
-                      <p className="text-muted-foreground text-xs leading-none">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
+            {user ? (
+              /* Profile Dropdown with Avatar & Sign Out */
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      aria-label="Open account menu"
+                      size="icon"
+                      variant="ghost"
+                      className="rounded-full size-8 p-0 ring-offset-background transition outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                  }
+                >
+                  <Avatar className="size-8">
+                    {user.image ? (
+                      <AvatarImage alt={user.name || "User"} src={user.image} />
+                    ) : (
+                      <AvatarImage alt={user.name || "User"} src="https://github.com/shadcn.png" />
+                    )}
+                    <AvatarFallback className="bg-[#274258] text-white font-semibold text-xs">
+                      {initial}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border p-1">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="font-normal px-2 py-1.5">
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium text-foreground text-sm leading-none">
+                          {user.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs leading-none">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => router.push("/profile")}
+                      className="cursor-pointer gap-2"
+                    >
+                      <UserIcon className="size-4" aria-hidden="true" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/my-books")}
+                      className="cursor-pointer gap-2"
+                    >
+                      <BookOpenIcon className="size-4" aria-hidden="true" />
+                      My Books
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/my-borrows")}
+                      className="cursor-pointer gap-2"
+                    >
+                      <BookmarkCheckIcon className="size-4" aria-hidden="true" />
+                      My Borrows
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/profile")}
+                      className="cursor-pointer gap-2"
+                    >
+                      <SettingsIcon className="size-4" aria-hidden="true" />
+                      Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => router.push("/profile")}
+                    variant="destructive"
+                    onClick={handleLogout}
                     className="cursor-pointer gap-2"
                   >
-                    <UserIcon className="size-4" aria-hidden="true" />
-                    Profile
+                    <LogOutIcon className="size-4" aria-hidden="true" />
+                    Sign Out
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/my-books")}
-                    className="cursor-pointer gap-2"
-                  >
-                    <BookOpenIcon className="size-4" aria-hidden="true" />
-                    My Books
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/my-borrows")}
-                    className="cursor-pointer gap-2"
-                  >
-                    <BookmarkCheckIcon className="size-4" aria-hidden="true" />
-                    My Borrows
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/profile")}
-                    className="cursor-pointer gap-2"
-                  >
-                    <SettingsIcon className="size-4" aria-hidden="true" />
-                    Settings
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={handleLogout}
-                  className="cursor-pointer gap-2"
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              /* Sign In / Sign Up buttons when no user is logged in */
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                    "rounded-full px-3.5 h-8 text-xs font-medium text-foreground hover:bg-muted"
+                  )}
                 >
-                  <LogOutIcon className="size-4" aria-hidden="true" />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "sm" }),
+                    "rounded-full px-3.5 h-8 bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/90"
+                  )}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile Navigation Trigger */}
@@ -234,25 +259,52 @@ export function Navbar() {
                     );
                   })}
 
-                  <div className="my-4 border-t border-border" />
-
-                  <Link
-                    href="/profile"
-                    onClick={() => setMobileOpen(false)}
-                    className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted"
-                  >
-                    My Profile ({user.name})
-                  </Link>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full text-destructive rounded-xl justify-start px-4"
-                  >
-                    Logout
-                  </Button>
+                  {user ? (
+                    <>
+                      <div className="my-4 border-t border-border" />
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileOpen(false)}
+                        className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted"
+                      >
+                        My Profile ({user.name})
+                      </Link>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          handleLogout();
+                        }}
+                        className="w-full text-destructive rounded-xl justify-start px-4 gap-2"
+                      >
+                        <LogOutIcon className="size-4" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="pt-4 flex flex-col gap-2 border-t border-border mt-2">
+                      <Link
+                        href="/login"
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "w-full rounded-xl justify-center h-10 text-sm font-medium"
+                        )}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          buttonVariants({ variant: "default" }),
+                          "w-full rounded-xl justify-center h-10 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                        )}
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
