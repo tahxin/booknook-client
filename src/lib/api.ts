@@ -13,14 +13,15 @@ export class ApiError extends Error {
   }
 }
 
-// Initial dataset matching the exact UI mockups
+// Initial dataset matching the exact UI mockups with high-quality network images
 export const INITIAL_BOOKS: Book[] = [
   {
     _id: "book-1",
     title: "Salt & Paper",
     author: "A. Rahman",
     category: "Fiction",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80",
     description:
       "A quiet novel about two siblings who inherit a failing print shop and uncover letters tucked into its walls.",
     totalCopies: 5,
@@ -34,7 +35,8 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Small Machines",
     author: "L. Chen",
     category: "Science",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&auto=format&fit=crop&q=80",
     description:
       "An exploration of cellular nanotechnology and the micro-scale mechanisms driving modern biological science.",
     totalCopies: 4,
@@ -48,7 +50,8 @@ export const INITIAL_BOOKS: Book[] = [
     title: "The Delta Years",
     author: "S. Akter",
     category: "History",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800&auto=format&fit=crop&q=80",
     description:
       "A multi-generational historical account of riverbank settlements, agrarian reforms, and monsoon resilience.",
     totalCopies: 3,
@@ -62,7 +65,8 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Moon Library",
     author: "M. Noor",
     category: "Kids",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
     description:
       "An illustrated children's story about a lunar librarian who lends celestial tales to nocturnal dreamers.",
     totalCopies: 4,
@@ -76,7 +80,8 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Field Notes",
     author: "T. Islam",
     category: "Others",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80",
     description:
       "Botanical sketches and field journals cataloging wetland flora, native bird migrations, and rural waterways.",
     totalCopies: 4,
@@ -90,7 +95,8 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Night Ferry",
     author: "R. Das",
     category: "Fiction",
-    image: "",
+    image:
+      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800&auto=format&fit=crop&q=80",
     description:
       "Atmospheric noir set aboard the nocturnal river ferries traveling between river ports in southern Bengal.",
     totalCopies: 5,
@@ -106,7 +112,8 @@ const INITIAL_BORROWS: Borrow[] = [
     _id: "borrow-1",
     bookId: "book-4",
     bookTitle: "Moon Library",
-    bookImage: "",
+    bookImage:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
     userEmail: "you@example.com",
     userName: "Shahjalal Ahmed Nishat",
     borrowDate: "2026-10-28T10:00:00.000Z",
