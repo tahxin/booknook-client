@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, BookmarkCheck, Calendar, User, ShieldAlert } from "lucide-react";
+import { ArrowLeft, BookmarkCheck, Calendar, User, ShieldAlert, Share2 } from "lucide-react";
 import { Book } from "@/types";
 import { getBook } from "@/lib/api";
 import { BookCover } from "@/components/common/book-cover";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Spinner } from "@/components/common/spinner";
 import { BorrowDialog } from "./borrow-dialog";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface BookDetailsViewProps {
@@ -38,6 +39,13 @@ export function BookDetailsView({ id }: BookDetailsViewProps) {
     }
     loadBook();
   }, [id]);
+
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Book link copied to clipboard!");
+    }
+  };
 
   if (loading) {
     return (
@@ -83,7 +91,7 @@ export function BookDetailsView({ id }: BookDetailsViewProps) {
   return (
     <div className="w-full space-y-8">
       {/* Navigation Breadcrumb / Back Button */}
-      <div>
+      <div className="flex items-center justify-between">
         <Link
           href="/books"
           className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -91,6 +99,16 @@ export function BookDetailsView({ id }: BookDetailsViewProps) {
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to All Books</span>
         </Link>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleShare}
+          className="h-8 px-3 rounded-full border border-border text-xs gap-1.5 text-muted-foreground hover:text-foreground"
+        >
+          <Share2 className="h-3.5 w-3.5 text-primary" />
+          <span>Share</span>
+        </Button>
       </div>
 
       {/* Main Two-Column View */}
