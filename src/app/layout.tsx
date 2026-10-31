@@ -41,10 +41,18 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium shadow-md"
+          >
+            Skip to main content
+          </a>
           <Suspense fallback={<div className="h-14" />}>
             <Navbar />
           </Suspense>
-          <main className="flex-1 flex flex-col">{children}</main>
+          <main id="main-content" className="flex-1 flex flex-col">
+            {children}
+          </main>
           <Footer />
           <Toaster richColors position="top-right" />
         </ThemeProvider>
