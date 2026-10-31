@@ -16,3 +16,4 @@ export default function ProfilePage() {
     </PrivateRoute>
   );
 }
+

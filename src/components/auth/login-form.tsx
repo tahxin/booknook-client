@@ -3,13 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BookOpen, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GoogleButton } from "./google-button";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export function LoginForm() {
@@ -17,8 +16,8 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("you@example.com");
+  const [password, setPassword] = useState("••••••");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,103 +42,107 @@ export function LoginForm() {
       router.push(callbackUrl);
       router.refresh();
     } catch {
-      setError("An unexpected error occurred. Please try again.");
-      toast.error("Failed to sign in. Please verify your credentials.");
+      setError("An unexpected error occurred.");
+      toast.error("Failed to sign in.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <Card className="w-full max-w-md mx-auto rounded-2xl border-border bg-card/90 backdrop-blur-sm shadow-md">
-      <CardHeader className="text-center pb-6">
-        <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-          <BookOpen className="h-5 w-5" />
-        </div>
-        <CardTitle className="text-2xl font-bold tracking-tight">
-          Welcome Back
-        </CardTitle>
-        <CardDescription className="text-muted-foreground text-sm">
-          Sign in to access your borrowed books and shelves
-        </CardDescription>
-      </CardHeader>
+  const handleGoogleSignIn = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: window.location.origin,
+      });
+    } catch {
+      toast.error("Google sign-in requires credentials in .env.local");
+    }
+  };
 
-      <CardContent className="space-y-5">
+  return (
+    <Card className="w-full max-w-md mx-auto rounded-3xl border border-white/10 dark:border-white/10 bg-[#141416] p-6 sm:p-8 text-white shadow-xl">
+      <CardContent className="p-0">
+        <h1 className="text-3xl font-bold tracking-tight text-white mb-6">
+          Sign in to your account
+        </h1>
+
         {error && (
-          <div className="p-3 text-xs rounded-xl bg-destructive/15 text-destructive border border-destructive/30">
+          <div className="mb-4 p-3 text-xs rounded-xl bg-destructive/15 text-destructive border border-destructive/30">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs text-zinc-300 font-normal">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
-              placeholder="reader@booknook.example"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="h-11 rounded-xl bg-background border-border"
+              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-white placeholder:text-zinc-500"
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <span
-                className="text-xs text-muted-foreground cursor-not-allowed select-none opacity-70"
-                title="Password reset is not enabled in this assignment"
-              >
+              <Label htmlFor="password" className="text-xs text-zinc-300 font-normal">
+                Password
+              </Label>
+              <span className="text-xs text-zinc-500 cursor-not-allowed select-none">
                 Forgot password?
               </span>
             </div>
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
+              placeholder="••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="h-11 rounded-xl bg-background border-border"
+              className="h-11 rounded-xl bg-[#1c1c20] border-white/10 text-white placeholder:text-zinc-500"
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Signing In...</span>
-              </span>
-            ) : (
-              "Sign In"
-            )}
-          </Button>
+          <div className="pt-2">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Signing In...</span>
+                </span>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </div>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
+        <div className="py-4 text-center text-xs text-zinc-500">or</div>
 
-        <GoogleButton label="Continue with Google" />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleGoogleSignIn}
+          className="w-full h-11 rounded-xl border-white/10 bg-[#1c1c20] hover:bg-[#24242a] text-white font-normal text-sm"
+        >
+          Continue with Google
+        </Button>
 
-        <p className="text-center text-xs text-muted-foreground pt-2">
-          Don&apos;t have an account yet?{" "}
+        <p className="text-center text-xs text-zinc-400 pt-5">
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="font-medium text-primary hover:underline underline-offset-4"
+            className="text-primary hover:underline underline-offset-4"
           >
             Register
           </Link>
