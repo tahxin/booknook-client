@@ -54,7 +54,13 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
-          <Toaster richColors position="top-right" />
+          <Toaster
+            richColors
+            position="top-right"
+            toastOptions={{
+              className: "rounded-xl border-border font-sans shadow-md",
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>
