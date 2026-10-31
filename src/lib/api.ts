@@ -13,94 +13,132 @@ export class ApiError extends Error {
   }
 }
 
-// Initial mock dataset for offline / client-first development
-const INITIAL_BOOKS: Book[] = [
+// Initial dataset matching the exact UI mockups
+export const INITIAL_BOOKS: Book[] = [
   {
     _id: "book-1",
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
+    title: "Salt & Paper",
+    author: "A. Rahman",
     category: "Fiction",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80",
-    description: "The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it.",
+    image: "",
+    description:
+      "A quiet novel about two siblings who inherit a failing print shop and uncover letters tucked into its walls.",
     totalCopies: 5,
     availableCopies: 3,
-    ownerName: "Sarah Jenkins",
-    ownerEmail: "sarah@example.com",
-    createdAt: "2026-10-25T10:00:00.000Z",
+    ownerName: "Shahjalal Ahmed Nishat",
+    ownerEmail: "you@example.com",
+    createdAt: "2026-10-26T10:00:00.000Z",
   },
   {
     _id: "book-2",
-    title: "A Brief History of Time",
-    author: "Stephen Hawking",
+    title: "Small Machines",
+    author: "L. Chen",
     category: "Science",
-    image: "https://images.unsplash.com/photo-1532012164546-f432f2e3edd4?w=600&auto=format&fit=crop&q=80",
-    description: "A landmark volume in science writing by one of the great minds of our time, exploring black holes and time travel.",
+    image: "",
+    description:
+      "An exploration of cellular nanotechnology and the micro-scale mechanisms driving modern biological science.",
     totalCopies: 4,
     availableCopies: 4,
-    ownerName: "David Chen",
-    ownerEmail: "david@example.com",
-    createdAt: "2026-10-26T12:30:00.000Z",
+    ownerName: "Shahjalal Ahmed Nishat",
+    ownerEmail: "you@example.com",
+    createdAt: "2026-10-26T12:00:00.000Z",
   },
   {
     _id: "book-3",
-    title: "Sapiens: A Brief History of Humankind",
-    author: "Yuval Noah Harari",
+    title: "The Delta Years",
+    author: "S. Akter",
     category: "History",
-    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80",
-    description: "A fascinating narrative of human creation and evolution that explores the ways biology and history have defined us.",
-    totalCopies: 6,
+    image: "",
+    description:
+      "A multi-generational historical account of riverbank settlements, agrarian reforms, and monsoon resilience.",
+    totalCopies: 3,
     availableCopies: 2,
-    ownerName: "Elena Rostova",
-    ownerEmail: "elena@example.com",
-    createdAt: "2026-10-27T09:15:00.000Z",
+    ownerName: "Shahjalal Ahmed Nishat",
+    ownerEmail: "you@example.com",
+    createdAt: "2026-10-27T14:00:00.000Z",
   },
   {
     _id: "book-4",
-    title: "The Little Prince",
-    author: "Antoine de Saint-Exupéry",
+    title: "Moon Library",
+    author: "M. Noor",
     category: "Kids",
-    image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&auto=format&fit=crop&q=80",
-    description: "A poetic tale illustrated with watercolors by the author, where a pilot stranded in the desert meets a young prince.",
-    totalCopies: 3,
+    image: "",
+    description:
+      "An illustrated children's story about a lunar librarian who lends celestial tales to nocturnal dreamers.",
+    totalCopies: 4,
     availableCopies: 1,
-    ownerName: "Marcus Bell",
-    ownerEmail: "marcus@example.com",
-    createdAt: "2026-10-28T14:20:00.000Z",
+    ownerName: "David Chen",
+    ownerEmail: "david@example.com",
+    createdAt: "2026-10-28T09:00:00.000Z",
   },
   {
     _id: "book-5",
-    title: "Cosmos",
-    author: "Carl Sagan",
-    category: "Science",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80",
-    description: "The story of cosmic evolution, science, and civilization in which Sagan retells fifteen billion years of cosmic history.",
+    title: "Field Notes",
+    author: "T. Islam",
+    category: "Others",
+    image: "",
+    description:
+      "Botanical sketches and field journals cataloging wetland flora, native bird migrations, and rural waterways.",
     totalCopies: 4,
     availableCopies: 4,
-    ownerName: "Sarah Jenkins",
-    ownerEmail: "sarah@example.com",
-    createdAt: "2026-10-29T16:00:00.000Z",
+    ownerName: "Shahjalal Ahmed Nishat",
+    ownerEmail: "you@example.com",
+    createdAt: "2026-10-29T11:00:00.000Z",
   },
   {
     _id: "book-6",
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
+    title: "Night Ferry",
+    author: "R. Das",
     category: "Fiction",
-    image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600&auto=format&fit=crop&q=80",
-    description: "A portrait of the Jazz Age that has been acclaimed by generations of readers, depicting Jay Gatsby's pursuit of Daisy.",
+    image: "",
+    description:
+      "Atmospheric noir set aboard the nocturnal river ferries traveling between river ports in southern Bengal.",
     totalCopies: 5,
-    availableCopies: 0,
+    availableCopies: 3,
     ownerName: "David Chen",
     ownerEmail: "david@example.com",
-    createdAt: "2026-10-30T11:45:00.000Z",
+    createdAt: "2026-10-30T16:00:00.000Z",
   },
 ];
 
-// Helper to access fallback mock store in browser localStorage
+const INITIAL_BORROWS: Borrow[] = [
+  {
+    _id: "borrow-1",
+    bookId: "book-4",
+    bookTitle: "Moon Library",
+    bookImage: "",
+    userEmail: "you@example.com",
+    userName: "Shahjalal Ahmed Nishat",
+    borrowDate: "2026-10-28T10:00:00.000Z",
+    returnDate: "2026-11-11T10:00:00.000Z",
+  },
+  {
+    _id: "borrow-2",
+    bookId: "book-5",
+    bookTitle: "Field Notes",
+    bookImage: "",
+    userEmail: "you@example.com",
+    userName: "Shahjalal Ahmed Nishat",
+    borrowDate: "2026-10-29T10:00:00.000Z",
+    returnDate: "2026-11-12T10:00:00.000Z",
+  },
+  {
+    _id: "borrow-3",
+    bookId: "book-6",
+    bookTitle: "Night Ferry",
+    bookImage: "",
+    userEmail: "you@example.com",
+    userName: "Shahjalal Ahmed Nishat",
+    borrowDate: "2026-10-30T10:00:00.000Z",
+    returnDate: "2026-11-13T10:00:00.000Z",
+  },
+];
+
 function getMockBooks(): Book[] {
   if (typeof window === "undefined") return INITIAL_BOOKS;
-  const stored = localStorage.getItem("booknook_mock_books");
+  const stored = localStorage.getItem("booknook_mock_books_v2");
   if (!stored) {
-    localStorage.setItem("booknook_mock_books", JSON.stringify(INITIAL_BOOKS));
+    localStorage.setItem("booknook_mock_books_v2", JSON.stringify(INITIAL_BOOKS));
     return INITIAL_BOOKS;
   }
   try {
@@ -112,28 +150,30 @@ function getMockBooks(): Book[] {
 
 function saveMockBooks(books: Book[]) {
   if (typeof window !== "undefined") {
-    localStorage.setItem("booknook_mock_books", JSON.stringify(books));
+    localStorage.setItem("booknook_mock_books_v2", JSON.stringify(books));
   }
 }
 
 function getMockBorrows(): Borrow[] {
-  if (typeof window === "undefined") return [];
-  const stored = localStorage.getItem("booknook_mock_borrows");
-  if (!stored) return [];
+  if (typeof window === "undefined") return INITIAL_BORROWS;
+  const stored = localStorage.getItem("booknook_mock_borrows_v2");
+  if (!stored) {
+    localStorage.setItem("booknook_mock_borrows_v2", JSON.stringify(INITIAL_BORROWS));
+    return INITIAL_BORROWS;
+  }
   try {
     return JSON.parse(stored);
   } catch {
-    return [];
+    return INITIAL_BORROWS;
   }
 }
 
 function saveMockBorrows(borrows: Borrow[]) {
   if (typeof window !== "undefined") {
-    localStorage.setItem("booknook_mock_borrows", JSON.stringify(borrows));
+    localStorage.setItem("booknook_mock_borrows_v2", JSON.stringify(borrows));
   }
 }
 
-// Token helper
 async function getAuthHeaders(): Promise<HeadersInit> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -146,12 +186,10 @@ async function getAuthHeaders(): Promise<HeadersInit> {
       }
     }
   } catch {
-    // Ignore token acquisition error in dev
+    // dev fallback
   }
   return headers;
 }
-
-// Core API Methods
 
 export interface GetBooksParams {
   sort?: "newest";
@@ -179,7 +217,7 @@ export async function getBooks(params?: GetBooksParams): Promise<Book[]> {
       return await res.json();
     }
   } catch {
-    // Backend offline: use mock fallback
+    // Fallback
   }
 
   let list = [...getMockBooks()];
@@ -263,8 +301,8 @@ export async function createBook(data: {
     description: data.description,
     totalCopies: data.totalCopies,
     availableCopies: data.totalCopies,
-    ownerName: session?.data?.user?.name || "BookNook Reader",
-    ownerEmail: session?.data?.user?.email || "reader@example.com",
+    ownerName: session?.data?.user?.name || "Shahjalal Ahmed Nishat",
+    ownerEmail: session?.data?.user?.email || "you@example.com",
     createdAt: new Date().toISOString(),
   };
 
@@ -276,7 +314,17 @@ export async function createBook(data: {
 
 export async function updateBook(
   id: string,
-  data: Partial<Pick<Book, "title" | "author" | "category" | "image" | "description" | "totalCopies">>
+  data: Partial<
+    Pick<
+      Book,
+      | "title"
+      | "author"
+      | "category"
+      | "image"
+      | "description"
+      | "totalCopies"
+    >
+  >
 ): Promise<Book> {
   const headers = await getAuthHeaders();
   try {
@@ -372,15 +420,14 @@ export async function borrowBook(bookId: string): Promise<Borrow> {
   }
 
   const session = await authClient.getSession();
-  const userEmail = session?.data?.user?.email || "reader@example.com";
-  const userName = session?.data?.user?.name || "BookNook Reader";
+  const userEmail = session?.data?.user?.email || "you@example.com";
+  const userName = session?.data?.user?.name || "Shahjalal Ahmed Nishat";
 
   const borrows = getMockBorrows();
   if (borrows.some((b) => b.bookId === bookId && b.userEmail === userEmail)) {
     throw new ApiError("You have already borrowed this book", 409);
   }
 
-  // Decrement copy
   book.availableCopies -= 1;
   saveMockBooks(books);
 
@@ -419,7 +466,7 @@ export async function getMyBorrows(): Promise<Borrow[]> {
   }
 
   const session = await authClient.getSession();
-  const userEmail = session?.data?.user?.email || "reader@example.com";
+  const userEmail = session?.data?.user?.email || "you@example.com";
   return getMockBorrows().filter((b) => b.userEmail === userEmail);
 }
 
@@ -441,7 +488,6 @@ export async function returnBook(borrowId: string): Promise<{ success: boolean }
   const borrow = borrows.find((b) => b._id === borrowId);
   if (!borrow) throw new ApiError("Borrow record not found", 404);
 
-  // Increment availableCopies
   const books = getMockBooks();
   const book = books.find((b) => b._id === borrow.bookId);
   if (book) {

@@ -39,3 +39,4 @@ export const auth = betterAuth({
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ],
 });
+

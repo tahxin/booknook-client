@@ -9,3 +9,4 @@ export const authClient = createAuthClient({
       : "http://localhost:3000"),
   plugins: [jwtClient()],
 });
+

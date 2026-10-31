@@ -64,11 +64,11 @@ test.describe("BookNook Client End-to-End Tests", () => {
     await expect(searchInput).toBeVisible();
 
     // Type a query
-    await searchInput.fill("Mockingbird");
+    await searchInput.fill("Salt");
     await page.waitForTimeout(400);
 
     // Verify filtered card is shown
-    await expect(page.getByText("To Kill a Mockingbird").first()).toBeVisible();
+    await expect(page.getByText("Salt & Paper").first()).toBeVisible();
   });
 
   test("Registration form shows real-time password requirement checklist", async ({
@@ -79,15 +79,10 @@ test.describe("BookNook Client End-to-End Tests", () => {
     // Verify page title
     await expect(page).toHaveTitle(/BookNook \| Register/);
 
-    // Verify password checklist text
-    await expect(page.getByText("Password requirements:").first()).toBeVisible();
-    await expect(
-      page.getByText("At least one uppercase letter (A-Z)").first()
-    ).toBeVisible();
-    await expect(
-      page.getByText("At least one lowercase letter (a-z)").first()
-    ).toBeVisible();
-    await expect(page.getByText("Minimum 6 characters in length").first()).toBeVisible();
+    // Verify password checklist text matching mockups
+    await expect(page.getByText("One uppercase letter").first()).toBeVisible();
+    await expect(page.getByText("One lowercase letter").first()).toBeVisible();
+    await expect(page.getByText("At least 6 characters").first()).toBeVisible();
 
     // Fill form with invalid password (missing uppercase)
     await page.locator("#name").first().fill("Test Reader");
