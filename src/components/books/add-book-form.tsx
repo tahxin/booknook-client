@@ -215,10 +215,16 @@ export function AddBookForm() {
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Short Description *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Short Description *</Label>
+              <span className="text-[11px] text-muted-foreground font-mono">
+                {description.length} / 1000 characters
+              </span>
+            </div>
             <Textarea
               id="description"
               rows={4}
+              maxLength={1000}
               placeholder="Provide a captivating summary or background of the book..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
