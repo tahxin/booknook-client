@@ -69,8 +69,9 @@ export function LoginForm() {
             ? `${window.location.origin}${callbackUrl}`
             : window.location.origin,
       });
-    } catch {
-      toast.error("Google sign-in requires credentials in .env.local");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google sign-in failed";
+      toast.error(msg);
     }
   };
 

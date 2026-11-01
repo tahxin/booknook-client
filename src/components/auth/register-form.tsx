@@ -100,8 +100,9 @@ export function RegisterForm() {
             ? `${window.location.origin}${callbackUrl}`
             : window.location.origin,
       });
-    } catch {
-      toast.error("Google sign-in requires client ID and secret in .env.local");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google sign-in failed";
+      toast.error(msg);
     }
   };
 

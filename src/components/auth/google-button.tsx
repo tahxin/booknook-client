@@ -5,19 +5,31 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
-export function GoogleButton({ label = "Continue with Google" }: { label?: string }) {
+export function GoogleButton({
+  label = "Continue with Google",
+  callbackUrl = "/",
+}: {
+  label?: string;
+  callbackUrl?: string;
+}) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
+      const destination = callbackUrl.startsWith("/") ? callbackUrl : `/${callbackUrl}`;
+      const fullCallbackUrl =
+        typeof window !== "undefined"
+          ? `${window.location.origin}${destination}`
+          : destination;
+
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: window.location.origin,
+        callbackURL: fullCallbackUrl,
       });
     } catch {
       toast.error(
-        "Google Sign-In is not configured yet. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env.local"
+        "Google Sign-In is not configured yet. Please verify your Google Client ID and Secret in settings."
       );
     } finally {
       setLoading(false);
