@@ -22,7 +22,7 @@ export function Footer() {
 
         {/* Center: Contact & Location */}
         <div className="text-left md:text-center text-xs text-muted-foreground space-y-0.5">
-          <p>hello@booknook.example</p>
+          <p>hello@booknook.com</p>
           <p>Mymensingh, Bangladesh</p>
         </div>
 

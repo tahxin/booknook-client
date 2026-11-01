@@ -64,11 +64,11 @@ test.describe("BookNook Client End-to-End Tests", () => {
     await expect(searchInput).toBeVisible();
 
     // Type a query
-    await searchInput.fill("Salt");
+    await searchInput.fill("Gatsby");
     await page.waitForTimeout(400);
 
     // Verify filtered card is shown
-    await expect(page.getByText("Salt & Paper").first()).toBeVisible();
+    await expect(page.getByText("The Great Gatsby").first()).toBeVisible();
   });
 
   test("Registration form shows real-time password requirement checklist", async ({

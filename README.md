@@ -8,8 +8,8 @@ Welcome to **BookNook**, a minimal, community-driven online library platform. Bo
 
 ## 🌐 Live Website
 
-- **Production Client URL**: `https://booknook-client.vercel.app` *(update with your live Vercel URL upon deployment)*
-- **Backend API URL**: `https://booknook-server.vercel.app` *(update with your live Vercel backend URL)*
+- **Production Client URL**: `https://booknook-client-one.vercel.app` 
+- **Backend API URL**: `https://booknook-server-pi.vercel.app` 
 
 ---
 
@@ -52,17 +52,17 @@ Welcome to **BookNook**, a minimal, community-driven online library platform. Bo
 
 ## 🛠️ Tech Stack
 
-| Area | Technologies |
-|---|---|
-| **Framework** | Next.js 16 (App Router), React 19, TypeScript |
-| **Styling & UI** | Tailwind CSS v4, shadcn/ui, Radix / Base UI |
-| **Icons** | Lucide React + custom inline SVGs |
-| **Auth** | BetterAuth (MongoDB Adapter & JWT Plugin) |
-| **Slider** | Swiper.js |
-| **Theming** | next-themes |
-| **Notifications** | Sonner |
-| **Image Hosting** | ImgBB API |
-| **Forms & Validation** | React Hook Form & Zod |
+| Area                   | Technologies                                  |
+| ---------------------- | --------------------------------------------- |
+| **Framework**          | Next.js 16 (App Router), React 19, TypeScript |
+| **Styling & UI**       | Tailwind CSS v4, shadcn/ui, Radix / Base UI   |
+| **Icons**              | Lucide React + custom inline SVGs             |
+| **Auth**               | BetterAuth (MongoDB Adapter & JWT Plugin)     |
+| **Slider**             | Swiper.js                                     |
+| **Theming**            | next-themes                                   |
+| **Notifications**      | Sonner                                        |
+| **Image Hosting**      | ImgBB API                                     |
+| **Forms & Validation** | React Hook Form & Zod                         |
 
 ---
 
