@@ -22,14 +22,14 @@ const shelf = [
 
 const socials = [
   { href: "https://x.com", label: "BookNook on X", Icon: XIcon },
-  { href: "https://github.com", label: "BookNook on GitHub", Icon: GithubIcon },
+  { href: "https://github.com/tahxin/booknook-client", label: "BookNook on GitHub", Icon: GithubIcon },
   {
-    href: "https://linkedin.com",
+    href: "https://www.linkedin.com/in/shahjalal-ahmed-nishat/",
     label: "BookNook on LinkedIn",
     Icon: LinkedinIcon,
   },
   {
-    href: "https://facebook.com",
+    href: "https://www.facebook.com/shahjalalahmednishat/",
     label: "BookNook on Facebook",
     Icon: FacebookIcon,
   },
@@ -78,10 +78,10 @@ export function Footer() {
                   href="mailto:hello@booknook.example"
                   className="link-quiet hover:text-foreground"
                 >
-                  hello@booknook.example
+                  hello@booknook.com
                 </a>
               </li>
-              <li>Mymensingh, Bangladesh</li>
+              <li>Dhaka, Bangladesh</li>
               <li className="pt-1 label-mono text-muted-foreground/80">
                 Loans run 14 days
               </li>
