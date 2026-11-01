@@ -75,7 +75,7 @@ export function Footer() {
             <ul className="space-y-2 text-[13px] text-muted-foreground">
               <li>
                 <a
-                  href="mailto:hello@booknook.example"
+                  href="mailto:hello@booknook.com"
                   className="link-quiet hover:text-foreground"
                 >
                   hello@booknook.com
