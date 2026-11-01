@@ -1,48 +1,56 @@
 import React from "react";
 import Link from "next/link";
-import { BookOpen, Atom, Landmark, Baby, Compass, ArrowUpRight } from "lucide-react";
+import { BookOpen, BookMarked, Sparkles, Atom, Landmark, Baby, ArrowUpRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export function Categories() {
   const categoryList = [
     {
-      name: "Fiction",
-      slug: "Fiction",
-      description: "Novels, contemporary stories, poetry, and evocative prose.",
-      icon: BookOpen,
-      count: "120+ titles",
+      name: "Novel",
+      slug: "Novel",
+      description: "Literary classics, modern page-turners, psychological dramas, and mysteries.",
+      icon: BookMarked,
+      count: "150+ books",
       gridSpan: "col-span-1 md:col-span-2",
     },
     {
-      name: "Science",
-      slug: "Science",
-      description: "Cosmology, astrophysics, evolutionary biology, and computing.",
-      icon: Atom,
-      count: "85+ titles",
+      name: "Non-Fiction",
+      slug: "Non-Fiction",
+      description: "Memoirs, productivity, psychology, philosophy, and real-life journeys.",
+      icon: Sparkles,
+      count: "95+ books",
+      gridSpan: "col-span-1",
+    },
+    {
+      name: "Fiction",
+      slug: "Fiction",
+      description: "Contemporary storytelling, magic realism, and speculative fiction.",
+      icon: BookOpen,
+      count: "110+ books",
       gridSpan: "col-span-1",
     },
     {
       name: "History",
       slug: "History",
-      description: "Chronicles of civilization, war memoirs, and cultural heritage.",
+      description: "Compelling world histories, legendary civilizations, and leadership biographies.",
       icon: Landmark,
-      count: "60+ titles",
+      count: "65+ books",
       gridSpan: "col-span-1",
     },
     {
       name: "Kids",
       slug: "Kids",
-      description: "Illustrated fables, early reader favorites, and bedtime stories.",
+      description: "Beloved bedtime stories, illustrated adventures, and young reader classics.",
       icon: Baby,
-      count: "45+ titles",
-      gridSpan: "col-span-1 md:col-span-2",
+      count: "50+ books",
+      gridSpan: "col-span-1",
     },
     {
-      name: "Others",
-      slug: "Others",
-      description: "Art, architecture, philosophy, journals, and memoirs.",
-      icon: Compass,
-      count: "50+ titles",
+      name: "Science & Nature",
+      slug: "Science",
+      description: "Popular science bestsellers, cosmos wonders, and human evolution.",
+      icon: Atom,
+      count: "45+ books",
       gridSpan: "col-span-1 md:col-span-3",
     },
   ];

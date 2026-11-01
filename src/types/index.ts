@@ -1,7 +1,16 @@
-export type Category = "Fiction" | "Science" | "History" | "Kids" | "Others";
+export type Category =
+  | "Fiction"
+  | "Non-Fiction"
+  | "Novel"
+  | "Science"
+  | "History"
+  | "Kids"
+  | "Others";
 
 export const CATEGORIES: Category[] = [
   "Fiction",
+  "Non-Fiction",
+  "Novel",
   "Science",
   "History",
   "Kids",
