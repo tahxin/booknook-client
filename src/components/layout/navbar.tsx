@@ -12,6 +12,7 @@ import {
   BookmarkCheckIcon,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { clearTokenCache } from "@/lib/api";
 import { ThemeToggle } from "./theme-toggle";
 import { BookNookLogo } from "@/components/common/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -68,6 +69,7 @@ export function Navbar() {
 
   const handleLogout = async () => {
     try {
+      clearTokenCache();
       await authClient.signOut();
       toast.success("Logged out successfully");
       router.push("/");

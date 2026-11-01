@@ -22,6 +22,14 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
+const DEFAULT_CATEGORY_COVERS: Record<Category, string> = {
+  Fiction: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80",
+  Science: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&auto=format&fit=crop&q=80",
+  History: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800&auto=format&fit=crop&q=80",
+  Kids: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
+  Others: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80",
+};
+
 export function AddBookForm() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
@@ -33,6 +41,7 @@ export function AddBookForm() {
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [customImageUrl, setCustomImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const userName = session?.user?.name || "Shahjalal Ahmed Nishat";
@@ -60,28 +69,38 @@ export function AddBookForm() {
 
     try {
       setSubmitting(true);
-      let imageUrl = "";
+      let imageUrl = customImageUrl.trim();
 
       if (imageFile) {
-        imageUrl = await uploadToImgbb(imageFile);
-      } else if (imagePreview) {
+        try {
+          imageUrl = await uploadToImgbb(imageFile);
+        } catch (uploadErr) {
+          console.warn("ImgBB upload failed or unconfigured, using fallback:", uploadErr);
+          imageUrl = imagePreview || DEFAULT_CATEGORY_COVERS[category];
+        }
+      } else if (!imageUrl && imagePreview) {
         imageUrl = imagePreview;
       }
 
+      if (!imageUrl || (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://") && !imageUrl.startsWith("data:image/"))) {
+        imageUrl = DEFAULT_CATEGORY_COVERS[category];
+      }
+
       await createBook({
-        title,
-        author,
+        title: title.trim(),
+        author: author.trim(),
         category,
         image: imageUrl,
-        description,
+        description: description.trim(),
         totalCopies: Number(totalCopies),
       });
 
       toast.success(`"${title}" added to the library!`);
       router.push("/my-books");
       router.refresh();
-    } catch {
-      toast.error("Failed to add book.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to add book.";
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -193,6 +212,18 @@ export function AddBookForm() {
                 className="hidden"
               />
             </label>
+            <Input
+              type="url"
+              placeholder="Or paste an image URL (https://...)"
+              value={customImageUrl}
+              onChange={(e) => {
+                setCustomImageUrl(e.target.value);
+                if (e.target.value.startsWith("http")) {
+                  setImagePreview(e.target.value);
+                }
+              }}
+              className="h-10 rounded-xl bg-background border-border text-xs"
+            />
           </div>
 
           {/* Description */}

@@ -181,19 +181,45 @@ function saveMockBorrows(borrows: Borrow[]) {
   }
 }
 
+let cachedToken: string | null = null;
+let tokenExpiresAt = 0;
+
+export async function getJwtToken(): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  const now = Date.now();
+  if (cachedToken && tokenExpiresAt > now) {
+    return cachedToken;
+  }
+  try {
+    const res = await fetch("/api/auth/token", {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.token) {
+        cachedToken = data.token;
+        tokenExpiresAt = now + 5 * 60 * 1000;
+        return cachedToken;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not fetch JWT token from /api/auth/token:", err);
+  }
+  return null;
+}
+
+export function clearTokenCache() {
+  cachedToken = null;
+  tokenExpiresAt = 0;
+}
+
 async function getAuthHeaders(): Promise<HeadersInit> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  try {
-    if (typeof window !== "undefined" && authClient?.token) {
-      const token = await authClient.token();
-      if (token?.data?.token) {
-        headers["Authorization"] = `Bearer ${token.data.token}`;
-      }
-    }
-  } catch {
-    // dev fallback
+  const token = await getJwtToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
   }
   return headers;
 }
@@ -224,7 +250,7 @@ export async function getBooks(params?: GetBooksParams): Promise<Book[]> {
       return await res.json();
     }
   } catch {
-    // Fallback
+    // Only fall back to local mock when backend is completely offline
   }
 
   let list = [...getMockBooks()];
@@ -257,6 +283,8 @@ export async function getBooks(params?: GetBooksParams): Promise<Book[]> {
 
 export async function getBook(id: string): Promise<Book> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/books/${id}`, {
       headers,
@@ -265,15 +293,28 @@ export async function getBook(id: string): Promise<Book> {
     if (res.ok) {
       return await res.json();
     }
-  } catch {
-    // Fallback
+    if (res.status === 404) {
+      throw new ApiError("Book not found", 404);
+    }
+    if (res.status === 401) {
+      throw new ApiError("Please log in to view book details", 401);
+    }
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(errData?.message || "Failed to load book", res.status);
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const book = getMockBooks().find((b) => b._id === id);
-  if (!book) {
-    throw new ApiError("Book not found", 404);
+  if (networkFailed) {
+    const book = getMockBooks().find((b) => b._id === id);
+    if (!book) {
+      throw new ApiError("Book not found", 404);
+    }
+    return book;
   }
-  return book;
+
+  throw new ApiError("Book not found", 404);
 }
 
 export async function createBook(data: {
@@ -285,6 +326,8 @@ export async function createBook(data: {
   totalCopies: number;
 }): Promise<Book> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/books`, {
       method: "POST",
@@ -292,31 +335,43 @@ export async function createBook(data: {
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      return await res.json();
+      const created: Book = await res.json();
+      return created;
     }
-  } catch {
-    // Fallback
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to add book (${res.status})`,
+      res.status
+    );
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const session = await authClient.getSession();
-  const newBook: Book = {
-    _id: "book-" + Date.now(),
-    title: data.title,
-    author: data.author,
-    category: data.category,
-    image: data.image,
-    description: data.description,
-    totalCopies: data.totalCopies,
-    availableCopies: data.totalCopies,
-    ownerName: session?.data?.user?.name || "Shahjalal Ahmed Nishat",
-    ownerEmail: session?.data?.user?.email || "you@example.com",
-    createdAt: new Date().toISOString(),
-  };
+  if (networkFailed) {
+    console.warn("Backend server unreachable, writing to local mock storage");
+    const session = await authClient.getSession();
+    const newBook: Book = {
+      _id: "book-" + Date.now(),
+      title: data.title,
+      author: data.author,
+      category: data.category,
+      image: data.image,
+      description: data.description,
+      totalCopies: data.totalCopies,
+      availableCopies: data.totalCopies,
+      ownerName: session?.data?.user?.name || "Shahjalal Ahmed Nishat",
+      ownerEmail: session?.data?.user?.email || "you@example.com",
+      createdAt: new Date().toISOString(),
+    };
 
-  const list = getMockBooks();
-  list.unshift(newBook);
-  saveMockBooks(list);
-  return newBook;
+    const list = getMockBooks();
+    list.unshift(newBook);
+    saveMockBooks(list);
+    return newBook;
+  }
+
+  throw new ApiError("Failed to add book", 500);
 }
 
 export async function updateBook(
@@ -334,6 +389,8 @@ export async function updateBook(
   >
 ): Promise<Book> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/books/${id}`, {
       method: "PATCH",
@@ -343,30 +400,42 @@ export async function updateBook(
     if (res.ok) {
       return await res.json();
     }
-  } catch {
-    // Fallback
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to update book (${res.status})`,
+      res.status
+    );
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const list = getMockBooks();
-  const index = list.findIndex((b) => b._id === id);
-  if (index === -1) throw new ApiError("Book not found", 404);
+  if (networkFailed) {
+    const list = getMockBooks();
+    const index = list.findIndex((b) => b._id === id);
+    if (index === -1) throw new ApiError("Book not found", 404);
 
-  const prev = list[index];
-  const updated: Book = {
-    ...prev,
-    ...data,
-    availableCopies:
-      data.totalCopies !== undefined
-        ? Math.max(0, data.totalCopies - (prev.totalCopies - prev.availableCopies))
-        : prev.availableCopies,
-  };
-  list[index] = updated;
-  saveMockBooks(list);
-  return updated;
+    const prev = list[index];
+    const updated: Book = {
+      ...prev,
+      ...data,
+      availableCopies:
+        data.totalCopies !== undefined
+          ? Math.max(0, data.totalCopies - (prev.totalCopies - prev.availableCopies))
+          : prev.availableCopies,
+    };
+    list[index] = updated;
+    saveMockBooks(list);
+    return updated;
+  }
+
+  throw new ApiError("Failed to update book", 500);
 }
 
 export async function deleteBook(id: string): Promise<{ success: boolean }> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/books/${id}`, {
       method: "DELETE",
@@ -375,31 +444,36 @@ export async function deleteBook(id: string): Promise<{ success: boolean }> {
     if (res.ok) {
       return await res.json();
     }
-    if (res.status === 409) {
-      const err = await res.json();
-      throw new ApiError(
-        err.message || "This book has active borrows and cannot be deleted",
-        409
-      );
-    }
-  } catch (err: unknown) {
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to delete book (${res.status})`,
+      res.status
+    );
+  } catch (err) {
     if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const list = getMockBooks();
-  const book = list.find((b) => b._id === id);
-  if (!book) throw new ApiError("Book not found", 404);
+  if (networkFailed) {
+    const list = getMockBooks();
+    const book = list.find((b) => b._id === id);
+    if (!book) throw new ApiError("Book not found", 404);
 
-  if (book.availableCopies < book.totalCopies) {
-    throw new ApiError("This book has active borrows and cannot be deleted", 409);
+    if (book.availableCopies < book.totalCopies) {
+      throw new ApiError("This book has active borrows and cannot be deleted", 409);
+    }
+
+    saveMockBooks(list.filter((b) => b._id !== id));
+    return { success: true };
   }
 
-  saveMockBooks(list.filter((b) => b._id !== id));
-  return { success: true };
+  throw new ApiError("Failed to delete book", 500);
 }
 
 export async function borrowBook(bookId: string): Promise<Borrow> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/borrows`, {
       method: "POST",
@@ -409,57 +483,63 @@ export async function borrowBook(bookId: string): Promise<Borrow> {
     if (res.ok) {
       return await res.json();
     }
-    if (res.status === 409) {
-      throw new ApiError("You have already borrowed this book", 409);
-    }
-    if (res.status === 400) {
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to borrow book (${res.status})`,
+      res.status
+    );
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
+  }
+
+  if (networkFailed) {
+    const books = getMockBooks();
+    const book = books.find((b) => b._id === bookId);
+    if (!book) throw new ApiError("Book not found", 404);
+    if (book.availableCopies <= 0) {
       throw new ApiError("This book is currently not available", 400);
     }
-  } catch (err: unknown) {
-    if (err instanceof ApiError) throw err;
+
+    const session = await authClient.getSession();
+    const userEmail = session?.data?.user?.email || "you@example.com";
+    const userName = session?.data?.user?.name || "Shahjalal Ahmed Nishat";
+
+    const borrows = getMockBorrows();
+    if (borrows.some((b) => b.bookId === bookId && b.userEmail === userEmail)) {
+      throw new ApiError("You have already borrowed this book", 409);
+    }
+
+    book.availableCopies -= 1;
+    saveMockBooks(books);
+
+    const now = new Date();
+    const returnDate = new Date();
+    returnDate.setDate(now.getDate() + 14);
+
+    const newBorrow: Borrow = {
+      _id: "borrow-" + Date.now(),
+      bookId,
+      bookTitle: book.title,
+      bookImage: book.image,
+      userEmail,
+      userName,
+      borrowDate: now.toISOString(),
+      returnDate: returnDate.toISOString(),
+    };
+
+    borrows.unshift(newBorrow);
+    saveMockBorrows(borrows);
+    return newBorrow;
   }
 
-  const books = getMockBooks();
-  const book = books.find((b) => b._id === bookId);
-  if (!book) throw new ApiError("Book not found", 404);
-  if (book.availableCopies <= 0) {
-    throw new ApiError("This book is currently not available", 400);
-  }
-
-  const session = await authClient.getSession();
-  const userEmail = session?.data?.user?.email || "you@example.com";
-  const userName = session?.data?.user?.name || "Shahjalal Ahmed Nishat";
-
-  const borrows = getMockBorrows();
-  if (borrows.some((b) => b.bookId === bookId && b.userEmail === userEmail)) {
-    throw new ApiError("You have already borrowed this book", 409);
-  }
-
-  book.availableCopies -= 1;
-  saveMockBooks(books);
-
-  const now = new Date();
-  const returnDate = new Date();
-  returnDate.setDate(now.getDate() + 14);
-
-  const newBorrow: Borrow = {
-    _id: "borrow-" + Date.now(),
-    bookId,
-    bookTitle: book.title,
-    bookImage: book.image,
-    userEmail,
-    userName,
-    borrowDate: now.toISOString(),
-    returnDate: returnDate.toISOString(),
-  };
-
-  borrows.unshift(newBorrow);
-  saveMockBorrows(borrows);
-  return newBorrow;
+  throw new ApiError("Failed to borrow book", 500);
 }
 
 export async function getMyBorrows(): Promise<Borrow[]> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/borrows`, {
       headers,
@@ -468,17 +548,29 @@ export async function getMyBorrows(): Promise<Borrow[]> {
     if (res.ok) {
       return await res.json();
     }
-  } catch {
-    // Fallback
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to load borrows (${res.status})`,
+      res.status
+    );
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const session = await authClient.getSession();
-  const userEmail = session?.data?.user?.email || "you@example.com";
-  return getMockBorrows().filter((b) => b.userEmail === userEmail);
+  if (networkFailed) {
+    const session = await authClient.getSession();
+    const userEmail = session?.data?.user?.email || "you@example.com";
+    return getMockBorrows().filter((b) => b.userEmail === userEmail);
+  }
+
+  return [];
 }
 
 export async function returnBook(borrowId: string): Promise<{ success: boolean }> {
   const headers = await getAuthHeaders();
+  let networkFailed = false;
+
   try {
     const res = await fetch(`${API_BASE_URL}/borrows/${borrowId}`, {
       method: "DELETE",
@@ -487,21 +579,31 @@ export async function returnBook(borrowId: string): Promise<{ success: boolean }
     if (res.ok) {
       return await res.json();
     }
-  } catch {
-    // Fallback
+    const errData = await res.json().catch(() => null);
+    throw new ApiError(
+      errData?.message || `Failed to return book (${res.status})`,
+      res.status
+    );
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    networkFailed = true;
   }
 
-  const borrows = getMockBorrows();
-  const borrow = borrows.find((b) => b._id === borrowId);
-  if (!borrow) throw new ApiError("Borrow record not found", 404);
+  if (networkFailed) {
+    const borrows = getMockBorrows();
+    const borrow = borrows.find((b) => b._id === borrowId);
+    if (!borrow) throw new ApiError("Borrow record not found", 404);
 
-  const books = getMockBooks();
-  const book = books.find((b) => b._id === borrow.bookId);
-  if (book) {
-    book.availableCopies = Math.min(book.totalCopies, book.availableCopies + 1);
-    saveMockBooks(books);
+    const books = getMockBooks();
+    const book = books.find((b) => b._id === borrow.bookId);
+    if (book) {
+      book.availableCopies = Math.min(book.totalCopies, book.availableCopies + 1);
+      saveMockBooks(books);
+    }
+
+    saveMockBorrows(borrows.filter((b) => b._id !== borrowId));
+    return { success: true };
   }
 
-  saveMockBorrows(borrows.filter((b) => b._id !== borrowId));
-  return { success: true };
+  throw new ApiError("Failed to return book", 500);
 }

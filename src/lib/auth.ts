@@ -8,7 +8,7 @@ let db = undefined;
 if (clientPromise) {
   try {
     const client = await clientPromise;
-    db = client.db();
+    db = client.db(process.env.DB_NAME || "booknook");
   } catch (e) {
     console.warn("MongoDB connection warning in auth:", e);
   }
