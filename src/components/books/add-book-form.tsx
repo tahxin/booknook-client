@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { ImagePlus, Loader2 } from "lucide-react";
 import { CATEGORIES, Category } from "@/types";
 import { authClient } from "@/lib/auth-client";
 import { createBook } from "@/lib/api";
@@ -19,18 +19,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
 const DEFAULT_CATEGORY_COVERS: Record<Category, string> = {
-  Novel: "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
   Fiction: "https://covers.openlibrary.org/b/isbn/9780525559474-L.jpg",
-  "Non-Fiction": "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
   History: "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
   Science: "https://covers.openlibrary.org/b/isbn/9780393609394-L.jpg",
   Kids: "https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
   Others: "https://covers.openlibrary.org/b/isbn/9780374533557-L.jpg",
 };
+
+const DESCRIPTION_LIMIT = 400;
 
 export function AddBookForm() {
   const router = useRouter();
@@ -39,15 +38,15 @@ export function AddBookForm() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState<Category>("Fiction");
-  const [totalCopies, setTotalCopies] = useState<number>(5);
+  const [totalCopies, setTotalCopies] = useState<number>(3);
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [customImageUrl, setCustomImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const userName = session?.user?.name || "Shahjalal Ahmed Nishat";
-  const userEmail = session?.user?.email || "you@example.com";
+  const userName = session?.user?.name || "Reader";
+  const userEmail = session?.user?.email || "";
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,7 +64,7 @@ export function AddBookForm() {
     e.preventDefault();
 
     if (!title.trim() || !author.trim() || !description.trim()) {
-      toast.error("Please fill in all required fields.");
+      toast.error("Add a title, an author, and a short description first.");
       return;
     }
 
@@ -76,15 +75,19 @@ export function AddBookForm() {
       if (imageFile) {
         try {
           imageUrl = await uploadToImgbb(imageFile);
-        } catch (uploadErr) {
-          console.warn("ImgBB upload failed or unconfigured, using fallback:", uploadErr);
+        } catch {
           imageUrl = imagePreview || DEFAULT_CATEGORY_COVERS[category];
         }
       } else if (!imageUrl && imagePreview) {
         imageUrl = imagePreview;
       }
 
-      if (!imageUrl || (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://") && !imageUrl.startsWith("data:image/"))) {
+      if (
+        !imageUrl ||
+        (!imageUrl.startsWith("http://") &&
+          !imageUrl.startsWith("https://") &&
+          !imageUrl.startsWith("data:image/"))
+      ) {
         imageUrl = DEFAULT_CATEGORY_COVERS[category];
       }
 
@@ -97,199 +100,193 @@ export function AddBookForm() {
         totalCopies: Number(totalCopies),
       });
 
-      toast.success(`"${title}" added to the library!`);
+      toast.success(`"${title.trim()}" is on the shelf.`);
       router.push("/my-books");
       router.refresh();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to add book.";
+      const msg = err instanceof Error ? err.message : "Could not add the book.";
       toast.error(msg);
     } finally {
       setSubmitting(false);
     }
   };
 
+  const previewSrc =
+    imagePreview || (customImageUrl.startsWith("http") ? customImageUrl : "");
+
   return (
-    <Card className="w-full max-w-xl mx-auto rounded-3xl border border-border/80 bg-card p-6 sm:p-8">
-      <CardContent className="p-0">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-6">
-          Add a Book
+    <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
+      <header className="border-b border-border pb-6">
+        <h1 className="font-display text-[clamp(2.3rem,5vw,3.4rem)] leading-[0.98] tracking-[-0.03em] text-foreground">
+          Add a book
         </h1>
+        <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+          Two minutes and one form. Loans run fourteen days and copies are
+          tracked for you.
+        </p>
+      </header>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-xs text-muted-foreground font-normal">
-              Book Title
-            </Label>
-            <Input
-              id="title"
-              placeholder="e.g. Salt & Paper"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="h-11 rounded-xl bg-background border-border"
-            />
-          </div>
-
-          {/* Author */}
-          <div className="space-y-2">
-            <Label htmlFor="author" className="text-xs text-muted-foreground font-normal">
-              Author Name
-            </Label>
-            <Input
-              id="author"
-              placeholder="e.g. A. Rahman"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-              className="h-11 rounded-xl bg-background border-border"
-            />
-          </div>
-
-          {/* Category & Total Copies */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="mt-8">
+        <div className="grid gap-10 lg:grid-cols-[1fr_240px] lg:gap-14">
+          <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-xs text-muted-foreground font-normal">
-                Category
-              </Label>
-              <Select
-                value={category}
-                onValueChange={(val) => setCategory(val as Category)}
-              >
-                <SelectTrigger id="category" className="h-11 rounded-xl bg-background border-border">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="copies" className="text-xs text-muted-foreground font-normal">
-                Total Copies
-              </Label>
+              <Label htmlFor="title">Book title</Label>
               <Input
-                id="copies"
-                type="number"
-                min={1}
-                value={totalCopies}
-                onChange={(e) =>
-                  setTotalCopies(Math.max(1, parseInt(e.target.value) || 1))
-                }
+                id="title"
+                placeholder="e.g. Salt & Paper"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
-                className="h-11 rounded-xl bg-background border-border"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="author">Author</Label>
+              <Input
+                id="author"
+                placeholder="e.g. A. Rahman"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={category}
+                  onValueChange={(val) => setCategory(val as Category)}
+                >
+                  <SelectTrigger id="category" className="h-11 w-full">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="copies">Total copies</Label>
+                <Input
+                  id="copies"
+                  type="number"
+                  min={1}
+                  value={totalCopies}
+                  onChange={(e) =>
+                    setTotalCopies(Math.max(1, parseInt(e.target.value) || 1))
+                  }
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between gap-4">
+                <Label htmlFor="description">Short description</Label>
+                <span
+                  className="label-mono text-muted-foreground"
+                  data-numeric
+                >
+                  {description.length} / {DESCRIPTION_LIMIT}
+                </span>
+              </div>
+              <Textarea
+                id="description"
+                rows={4}
+                maxLength={DESCRIPTION_LIMIT}
+                placeholder="What is it about, and who should read it?"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="resize-none bg-background"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 border-t border-border pt-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="your-name">Your name</Label>
+                <Input id="your-name" value={userName} disabled className="text-[13px]" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="your-email">Your email</Label>
+                <Input id="your-email" value={userEmail} disabled className="text-[13px]" />
+              </div>
+            </div>
           </div>
 
-          {/* Image Upload Dropzone */}
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground font-normal">
-              Book Image
-            </Label>
-            <label className="w-full border border-dashed border-border/80 hover:border-primary/50 transition-colors rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer bg-background/30 text-center">
-              {imagePreview ? (
-                <div className="relative w-24 aspect-[4/3] rounded-xl overflow-hidden border border-border">
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+          <aside className="order-first lg:order-last">
+            <p className="label-mono mb-3 text-muted-foreground">
+              Cover preview
+            </p>
+
+            <div className="relative aspect-[2/3] w-full max-w-[200px] overflow-hidden border border-border bg-muted">
+              {previewSrc ? (
+                <Image
+                  src={previewSrc}
+                  alt="Cover preview"
+                  fill
+                  unoptimized={previewSrc.startsWith("data:")}
+                  className="object-cover"
+                />
               ) : (
-                <span className="text-xs text-muted-foreground">
-                  Drop an image or click to upload
-                </span>
+                <div className="flex h-full items-center justify-center p-4 text-center">
+                  <span className="label-mono text-muted-foreground">
+                    No cover yet
+                  </span>
+                </div>
               )}
+            </div>
+
+            <label className="mt-3 flex w-full max-w-[200px] cursor-pointer items-center justify-center gap-2 border border-dashed border-border px-3 py-2.5 text-[12px] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground">
+              <ImagePlus className="h-3.5 w-3.5" aria-hidden="true" />
+              Upload an image
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="hidden"
+                className="sr-only"
               />
             </label>
-            <Input
-              type="url"
-              placeholder="Or paste an image URL (https://...)"
-              value={customImageUrl}
-              onChange={(e) => {
-                setCustomImageUrl(e.target.value);
-                if (e.target.value.startsWith("http")) {
-                  setImagePreview(e.target.value);
-                }
-              }}
-              className="h-10 rounded-xl bg-background border-border text-xs"
-            />
-          </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-xs text-muted-foreground font-normal">
-              Short Description
-            </Label>
-            <Textarea
-              id="description"
-              rows={3}
-              placeholder="A quiet novel about two siblings who inherit a failing print shop."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="rounded-xl bg-background border-border resize-none text-sm"
-            />
-          </div>
-
-          {/* Name & Email Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="your-name" className="text-xs text-muted-foreground font-normal">
-                Your Name
+            <div className="mt-3 w-full max-w-[200px]">
+              <Label htmlFor="image-url" className="sr-only">
+                Image URL
               </Label>
               <Input
-                id="your-name"
-                value={userName}
-                disabled
-                className="h-11 rounded-xl bg-background border-border opacity-80"
+                id="image-url"
+                type="url"
+                placeholder="or paste an image URL"
+                value={customImageUrl}
+                onChange={(e) => setCustomImageUrl(e.target.value)}
+                className="h-9 text-[12px]"
               />
             </div>
+          </aside>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="your-email" className="text-xs text-muted-foreground font-normal">
-                Your Email
-              </Label>
-              <Input
-                id="your-email"
-                value={userEmail}
-                disabled
-                className="h-11 rounded-xl bg-background border-border opacity-80"
-              />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="pt-2">
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm"
-            >
-              {submitting ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Adding Book...</span>
-                </span>
-              ) : (
-                "Add Book"
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        <div className="mt-10 border-t border-border pt-6">
+          <Button
+            type="submit"
+            disabled={submitting}
+            className="w-full sm:w-auto sm:min-w-[200px]"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Adding the book
+              </>
+            ) : (
+              "Add book"
+            )}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

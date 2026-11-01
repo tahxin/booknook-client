@@ -28,7 +28,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
           const isLast = idx === items.length - 1;
           return (
             <li key={idx} className="flex items-center gap-1.5">
-              <ChevronRight className="h-3 w-3 text-muted-foreground/60 shrink-0" />
+              <ChevronRight className="h-3 w-3 text-muted-foreground/80 shrink-0" />
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
@@ -48,4 +48,3 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     </nav>
   );
 }
-

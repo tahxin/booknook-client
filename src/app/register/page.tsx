@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-16 sm:py-24">
+    <div className="flex-1">
       <Suspense
         fallback={
-          <div className="h-96 flex items-center justify-center">
-            <Spinner label="Loading registration form..." />
+          <div className="flex h-96 items-center justify-center">
+            <Spinner label="Loading the registration form" />
           </div>
         }
       >
@@ -23,4 +23,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

@@ -8,37 +8,33 @@ import { getBooks } from "@/lib/api";
 import { BookCover } from "@/components/common/book-cover";
 import { EditBookDialog } from "./edit-book-dialog";
 import { DeleteBookDialog } from "./delete-book-dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/common/empty-state";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function MyBooksView() {
   const { data: session } = authClient.useSession();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(null);
+  const [selectedBookForEdit, setSelectedBookForEdit] = useState<Book | null>(
+    null
+  );
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const [selectedBookForDelete, setSelectedBookForDelete] = useState<Book | null>(null);
+  const [selectedBookForDelete, setSelectedBookForDelete] =
+    useState<Book | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const userEmail = session?.user?.email || "you@example.com";
+  const userEmail = session?.user?.email || "";
 
   useEffect(() => {
+    if (!userEmail) return;
     async function loadUserBooks() {
       try {
         setLoading(true);
-        const data = await getBooks({
-          ownerEmail: userEmail,
-        });
+        const data = await getBooks({ ownerEmail: userEmail });
         setBooks(data);
       } catch {
         setBooks([]);
@@ -60,126 +56,138 @@ export function MyBooksView() {
   };
 
   return (
-    <div className="w-full space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          My Books
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Books you added. Edit or remove them anytime.
-        </p>
-      </div>
-
-      {/* Table */}
-      {loading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-12 w-full rounded-xl" />
-          <Skeleton className="h-16 w-full rounded-xl" />
-          <Skeleton className="h-16 w-full rounded-xl" />
+    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      <header className="border-b border-border pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <h1 className="font-display text-[clamp(2.3rem,5vw,3.4rem)] leading-[0.98] tracking-[-0.03em] text-foreground">
+            My books
+          </h1>
+          <Link
+            href="/add-book"
+            className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Add a book
+          </Link>
         </div>
-      ) : books.length > 0 ? (
-        <div className="rounded-2xl border border-border/80 bg-card overflow-hidden">
-          <Table>
-            <TableHeader className="bg-transparent border-b border-border/60">
-              <TableRow className="border-border/60 hover:bg-transparent">
-                <TableHead className="w-24 pl-6 text-xs text-muted-foreground font-normal">
-                  Cover
-                </TableHead>
-                <TableHead className="text-xs text-muted-foreground font-normal">
-                  Title
-                </TableHead>
-                <TableHead className="text-xs text-muted-foreground font-normal">
-                  Copies
-                </TableHead>
-                <TableHead className="text-xs text-muted-foreground font-normal">
-                  Added
-                </TableHead>
-                <TableHead className="text-right pr-6 text-xs text-muted-foreground font-normal">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+          The titles you put on the shelf. Edit an entry, or remove it once
+          every copy is back.
+        </p>
+      </header>
+
+      <div className="mt-8">
+        {loading ? (
+          <div className="space-y-px">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 border-b border-border py-4"
+              >
+                <div className="h-14 w-10 animate-pulse bg-muted" />
+                <div className="space-y-2">
+                  <div className="h-4 w-40 animate-pulse bg-muted" />
+                  <div className="h-3 w-24 animate-pulse bg-muted" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : books.length > 0 ? (
+          <>
+            <div className="hidden grid-cols-[4.5rem_1fr_6rem_7rem_8rem] gap-4 border-b border-border pb-3 label-mono text-muted-foreground md:grid">
+              <span>Cover</span>
+              <span>Title</span>
+              <span>Copies</span>
+              <span>Added</span>
+              <span className="text-right">Actions</span>
+            </div>
+
+            <ul className="divide-y divide-border">
               {books.map((book) => {
                 const formattedDate = new Date(book.createdAt).toLocaleDateString(
                   "en-GB",
-                  { day: "numeric", month: "short" }
+                  { day: "numeric", month: "short", year: "numeric" }
                 );
 
                 return (
-                  <TableRow
+                  <li
                     key={book._id}
-                    className="border-b border-border/60 last:border-0 hover:bg-muted/20"
+                    className="grid grid-cols-[3.5rem_1fr_auto] items-center gap-4 py-4 md:grid-cols-[4.5rem_1fr_6rem_7rem_8rem]"
                   >
-                    <TableCell className="pl-6 py-4">
-                      <div className="w-10 h-12 rounded-lg overflow-hidden shrink-0">
-                        <BookCover
-                          title={book.title}
-                          image={book.image}
-                          aspectRatio="aspect-[5/6]"
-                        />
-                      </div>
-                    </TableCell>
+                    <Link
+                      href={`/books/${book._id}`}
+                      className="block w-11 md:w-14"
+                    >
+                      <BookCover
+                        title={book.title}
+                        image={book.image}
+                        aspectRatio="aspect-[2/3]"
+                      />
+                    </Link>
 
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <Link
-                          href={`/books/${book._id}`}
-                          className="font-bold text-foreground hover:text-primary transition-colors text-sm"
-                        >
-                          {book.title}
-                        </Link>
-                        <span className="text-xs text-muted-foreground">
-                          {book.category}
-                        </span>
-                      </div>
-                    </TableCell>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/books/${book._id}`}
+                        className="block truncate font-display text-[1.0625rem] leading-tight text-foreground transition-colors hover:text-primary"
+                      >
+                        {book.title}
+                      </Link>
+                      <p className="mt-1 label-mono text-muted-foreground">
+                        {book.category}
+                      </p>
+                      <p className="mt-1 label-mono text-muted-foreground md:hidden">
+                        {book.totalCopies} copies · {formattedDate}
+                      </p>
+                    </div>
 
-                    <TableCell className="text-xs text-muted-foreground font-normal">
-                      {book.totalCopies} copies
-                    </TableCell>
+                    <span
+                      className="hidden label-mono text-muted-foreground md:block"
+                      data-numeric
+                    >
+                      {book.totalCopies}
+                    </span>
+                    <span
+                      className="hidden label-mono text-muted-foreground md:block"
+                      data-numeric
+                    >
+                      {formattedDate}
+                    </span>
 
-                    <TableCell className="text-xs text-muted-foreground font-normal">
-                      Added {formattedDate}
-                    </TableCell>
-
-                    <TableCell className="text-right pr-6">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditClick(book)}
-                          className="h-8 px-4 rounded-xl border-border/80 hover:bg-muted text-foreground text-xs font-normal"
-                        >
-                          Edit
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteClick(book)}
-                          className="h-8 px-4 rounded-xl border-border/80 hover:bg-muted text-[#f87171] text-xs font-normal"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    <div className="flex items-center justify-end gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleEditClick(book)}
+                        aria-label={`Edit ${book.title}`}
+                        title="Edit"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleDeleteClick(book)}
+                        aria-label={`Delete ${book.title}`}
+                        title="Delete"
+                        className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </li>
                 );
               })}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <div className="text-center py-20 rounded-2xl border border-dashed border-border bg-card p-8">
-          <p className="text-sm text-muted-foreground">
-            No books added yet.
-          </p>
-        </div>
-      )}
+            </ul>
+          </>
+        ) : (
+          <EmptyState
+            title="You have not added a book yet"
+            description="Put a title on the shelf and it becomes available to every reader here."
+            action={{ label: "Add your first book", href: "/add-book" }}
+          />
+        )}
+      </div>
 
-      {/* Edit Dialog */}
       <EditBookDialog
         book={selectedBookForEdit}
         open={editDialogOpen}
@@ -191,7 +199,6 @@ export function MyBooksView() {
         }}
       />
 
-      {/* Delete Dialog */}
       <DeleteBookDialog
         book={selectedBookForDelete}
         open={deleteDialogOpen}

@@ -13,13 +13,25 @@ export class ApiError extends Error {
   }
 }
 
+const LEGACY_CATEGORY_MAP: Record<string, Category> = {
+  Novel: "Fiction",
+  "Non-Fiction": "Others",
+};
+
+function normalizeBookCategory(book: Book): Book {
+  return {
+    ...book,
+    category: LEGACY_CATEGORY_MAP[book.category] || book.category,
+  };
+}
+
 // Initial dataset matching the exact UI mockups with high-quality network images
 export const INITIAL_BOOKS: Book[] = [
   {
     _id: "book-1",
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
-    category: "Novel",
+    category: "Fiction",
     image: "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
     description:
       "A classic American novel portraying the tragic story of Jay Gatsby and his unrequited pursuit of Daisy Buchanan during the Roaring Twenties.",
@@ -33,7 +45,7 @@ export const INITIAL_BOOKS: Book[] = [
     _id: "book-2",
     title: "Atomic Habits",
     author: "James Clear",
-    category: "Non-Fiction",
+    category: "Others",
     image: "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
     description:
       "An easy and proven way to build good habits and break bad ones. Small changes that deliver remarkable personal growth over time.",
@@ -132,7 +144,10 @@ function getMockBooks(): Book[] {
     return INITIAL_BOOKS;
   }
   try {
-    return JSON.parse(stored);
+    const books = JSON.parse(stored) as Book[];
+    const normalized = books.map(normalizeBookCategory);
+    saveMockBooks(normalized);
+    return normalized;
   } catch {
     return INITIAL_BOOKS;
   }
@@ -230,7 +245,8 @@ export async function getBooks(params?: GetBooksParams): Promise<Book[]> {
       cache: "no-store",
     });
     if (res.ok) {
-      return await res.json();
+      const books: Book[] = await res.json();
+      return books.map(normalizeBookCategory);
     }
   } catch {
     // Only fall back to local mock when backend is completely offline
@@ -274,7 +290,7 @@ export async function getBook(id: string): Promise<Book> {
       cache: "no-store",
     });
     if (res.ok) {
-      return await res.json();
+      return normalizeBookCategory(await res.json());
     }
     if (res.status === 404) {
       throw new ApiError("Book not found", 404);
@@ -319,7 +335,7 @@ export async function createBook(data: {
     });
     if (res.ok) {
       const created: Book = await res.json();
-      return created;
+      return normalizeBookCategory(created);
     }
     const errData = await res.json().catch(() => null);
     throw new ApiError(
@@ -381,7 +397,7 @@ export async function updateBook(
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      return await res.json();
+      return normalizeBookCategory(await res.json());
     }
     const errData = await res.json().catch(() => null);
     throw new ApiError(

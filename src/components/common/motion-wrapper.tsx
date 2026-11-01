@@ -1,99 +1,39 @@
-"use client";
-
 import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface FadeInProps {
   children: React.ReactNode;
-  delay?: number;
-  duration?: number;
   className?: string;
 }
 
-export function FadeIn({
-  children,
-  delay = 0,
-  duration = 0.4,
-  className = "",
-}: FadeInProps) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+/**
+ * Reveal on enter, driven by a scroll timeline in CSS.
+ *
+ * Deliberately not JS: an inline `opacity: 0` written during SSR can never be
+ * removed by React when the client renders a different branch (reduced
+ * motion), which leaves whole sections permanently invisible. CSS keeps the
+ * default state visible and only animates where the browser supports it.
+ */
+export function FadeIn({ children, className }: FadeInProps) {
+  return <div className={cn("reveal", className)}>{children}</div>;
 }
 
 export function StaggerContainer({
   children,
-  className = "",
+  className,
 }: {
   children: React.ReactNode;
   className?: string;
 }) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.08,
-          },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }
 
 export function StaggerItem({
   children,
-  className = "",
+  className,
 }: {
   children: React.ReactNode;
   className?: string;
 }) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 14 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.35, ease: "easeOut" },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }
-

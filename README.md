@@ -38,11 +38,11 @@ Welcome to **BookNook**, a minimal, community-driven online library platform. Bo
 4. **Curated Reading Experience**:
    - **Hero Banner Slider** built with Swiper.js, auto-play pause-on-hover, and custom bar pagination.
    - **Dynamic New Arrivals** showcasing the newest catalog additions.
-   - **Top Categories** bento grid (Fiction, Science, History, Kids, Others).
-   - **Interactive All Books Catalog** with debounced instant search and filter pills.
+    - **Top Categories** catalogue index for Fiction, Science, History, Kids, and Others.
+    - **Interactive All Books Catalog** with instant search, category filters, and an availability toggle.
 
 5. **Design System & Polish**:
-   - Once UI-inspired "reading room at night" aesthetic: Charcoal surfaces (`#0e0e10`), amber lamplight accent (`#f5b942`), and warm paper light mode (`#faf8f4`).
+    - Original “Accession” visual system: archive-ledger typography, institutional blue actions, highlighter-lime signals, and warm chalk/light and ink/dark themes.
    - Seamless dark/light theme toggle via `next-themes`.
    - Rich notifications powered by `sonner` toasts (no browser `alert()`, `confirm()`, or `prompt()`).
    - Rebranded modern X social icon and custom 404 page with "Back to Home" navigation.

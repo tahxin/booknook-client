@@ -5,22 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
-  UserIcon,
-  SettingsIcon,
-  LogOutIcon,
-  BookOpenIcon,
-  BookmarkCheckIcon,
+  UserRound,
+  LogOut,
+  BookOpen,
+  BookmarkCheck,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { clearTokenCache } from "@/lib/api";
 import { ThemeToggle } from "./theme-toggle";
 import { BookNookLogo } from "@/components/common/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,279 +35,286 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+const PUBLIC_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/books", label: "All Books" },
+];
+
+const PRIVATE_LINKS = [
+  { href: "/add-book", label: "Add Book" },
+  { href: "/my-books", label: "My Books" },
+  { href: "/my-borrows", label: "My Borrows" },
+];
+
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const user = session?.user;
 
-  const publicLinks = [
-    { href: "/", label: "Home" },
-    { href: "/books", label: "All Books" },
-  ];
-
-  const privateLinks = user
-    ? [
-        { href: "/add-book", label: "Add Book" },
-        { href: "/my-books", label: "My Books" },
-        { href: "/my-borrows", label: "My Borrows" },
-      ]
-    : [
-        { href: "/add-book", label: "Add Book" },
-        { href: "/my-books", label: "My Books" },
-        { href: "/my-borrows", label: "My Borrows" },
-      ];
-
-  const navLinks = [...publicLinks, ...privateLinks];
+  const navLinks = user ? [...PUBLIC_LINKS, ...PRIVATE_LINKS] : PUBLIC_LINKS;
 
   const handleLogout = async () => {
     try {
       clearTokenCache();
       await authClient.signOut();
-      toast.success("Logged out successfully");
+      toast.success("You are logged out.");
       router.push("/");
       router.refresh();
     } catch {
-      toast.error("Failed to log out");
+      toast.error("Could not log you out. Try again.");
     }
   };
 
-  const initial = user?.name ? user.name.trim()[0].toUpperCase() : "U";
+  const initial = user?.name ? user.name.trim()[0].toUpperCase() : "R";
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   return (
-    <header className="sticky top-4 z-50 w-full px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between h-14 px-5 sm:px-6 rounded-full bg-white dark:bg-[#141416]/95 border border-border dark:border-white/10 shadow-sm backdrop-blur-md">
-          {/* Brand Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 font-bold text-base tracking-tight text-foreground dark:text-white hover:opacity-90 transition-opacity"
-          >
-            <BookNookLogo className="h-6 w-6 rounded-md" />
-            <span className="font-bold text-foreground dark:text-white tracking-tight">BookNook</span>
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
+      <nav className="mx-auto flex h-15 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-foreground"
+          aria-label="BookNook home"
+        >
+          <BookNookLogo className="h-5.5 w-5.5" />
+          <span className="font-display text-[1.125rem] leading-none tracking-[-0.01em]">
+            BookNook
+          </span>
+        </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1.5">
-            {navLinks.map((link) => {
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname?.startsWith(link.href);
+        <div className="hidden md:flex items-center gap-7">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "relative py-1 text-[13px] transition-colors",
+                isActive(link.href)
+                  ? "text-foreground after:absolute after:-bottom-4.75 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#ececec] text-zinc-900 dark:bg-[#26262a] dark:text-white"
-                      : "text-muted-foreground hover:text-foreground dark:text-zinc-400 dark:hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
+        <div className="hidden md:flex items-center gap-1.5">
+          <ThemeToggle />
 
-          {/* Desktop Right Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <ThemeToggle />
-
-            {user ? (
-              /* Profile Dropdown with Avatar & Sign Out */
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button
-                      aria-label="Open account menu"
-                      size="icon"
-                      variant="ghost"
-                      className="rounded-full size-8 p-0 ring-offset-background transition outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    />
-                  }
-                >
-                  <Avatar className="size-8">
-                    {user.image ? (
-                      <AvatarImage alt={user.name || "User"} src={user.image} />
-                    ) : (
-                      <AvatarImage alt={user.name || "User"} src="https://github.com/shadcn.png" />
-                    )}
-                    <AvatarFallback className="bg-[#274258] text-white font-semibold text-xs">
-                      {initial}
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 rounded-xl bg-card border-border p-1">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel className="font-normal px-2 py-1.5">
-                      <div className="flex flex-col gap-1">
-                        <p className="font-medium text-foreground text-sm leading-none">
-                          {user.name}
-                        </p>
-                        <p className="text-muted-foreground text-xs leading-none">
-                          {user.email}
-                        </p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile")}
-                      className="cursor-pointer gap-2"
-                    >
-                      <UserIcon className="size-4" aria-hidden="true" />
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/my-books")}
-                      className="cursor-pointer gap-2"
-                    >
-                      <BookOpenIcon className="size-4" aria-hidden="true" />
-                      My Books
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/my-borrows")}
-                      className="cursor-pointer gap-2"
-                    >
-                      <BookmarkCheckIcon className="size-4" aria-hidden="true" />
-                      My Borrows
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile")}
-                      className="cursor-pointer gap-2"
-                    >
-                      <SettingsIcon className="size-4" aria-hidden="true" />
-                      Settings
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
+          {isPending ? (
+            <span className="h-8 w-8" aria-hidden="true" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    aria-label="Open account menu"
+                    size="icon-sm"
+                    variant="ghost"
+                    className="ml-1 rounded-full p-0"
+                  />
+                }
+              >
+                <Avatar className="size-8 ring-1 ring-border">
+                  <AvatarImage
+                    alt={user.name || "Reader"}
+                    src={user.image || undefined}
+                  />
+                  <AvatarFallback className="bg-foreground text-[11px] font-medium text-background">
+                    {initial}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-60 rounded-none border border-border bg-popover p-1"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="px-2 py-2 font-normal">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm leading-none text-foreground">
+                        {user.name}
+                      </p>
+                      <p className="label-mono truncate text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="cursor-pointer gap-2.5 py-2"
+                  >
+                    <UserRound className="size-4" aria-hidden="true" />
+                    My Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-books")}
+                    className="cursor-pointer gap-2.5 py-2"
+                  >
+                    <BookOpen className="size-4" aria-hidden="true" />
+                    My Books
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/my-borrows")}
+                    className="cursor-pointer gap-2.5 py-2"
+                  >
+                    <BookmarkCheck className="size-4" aria-hidden="true" />
+                    My Borrows
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={handleLogout}
-                    className="cursor-pointer gap-2"
+                    className="cursor-pointer gap-2.5 py-2"
                   >
-                    <LogOutIcon className="size-4" aria-hidden="true" />
-                    Sign Out
+                    <LogOut className="size-4" aria-hidden="true" />
+                    Log out
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              /* Sign In / Sign Up buttons when no user is logged in */
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "sm" }),
-                    "rounded-full px-3.5 h-8 text-xs font-medium text-foreground hover:bg-muted"
-                  )}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "sm" }),
-                    "rounded-full px-3.5 h-8 bg-primary text-primary-foreground font-medium text-xs hover:bg-primary/90"
-                  )}
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Navigation Trigger */}
-          <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
-            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger
-                className="h-8 w-8 inline-flex items-center justify-center rounded-full hover:bg-muted text-foreground transition-colors"
-                aria-label="Open menu"
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2 pl-1">
+              <Link
+                href="/login"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
               >
-                <Menu className="h-5 w-5" />
-              </SheetTrigger>
-              <SheetContent side="right" className="w-72 pt-10">
-                <SheetHeader className="text-left mb-6">
-                  <SheetTitle className="flex items-center gap-2">
-                    <BookNookLogo className="h-6 w-6" />
-                    <span>BookNook</span>
-                  </SheetTitle>
-                </SheetHeader>
+                Log in
+              </Link>
+              <Link
+                href="/register"
+                className={cn(buttonVariants({ variant: "default", size: "sm" }))}
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
 
-                <div className="flex flex-col gap-2">
-                  {navLinks.map((link) => {
-                    const isActive = pathname === link.href;
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                          isActive
-                            ? "bg-[#ececec] text-zinc-900 dark:bg-[#26262a] dark:text-white"
-                            : "text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
-                    );
-                  })}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger
+              className="inline-flex h-10 w-10 items-center justify-center text-foreground"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              className="w-[86%] max-w-xs rounded-none border-l border-border bg-background p-0"
+            >
+              <SheetHeader className="border-b border-border px-5 py-4 text-left">
+                <SheetTitle className="flex items-center gap-2.5">
+                  <BookNookLogo className="h-5 w-5" />
+                  <span className="font-display text-base leading-none">
+                    BookNook
+                  </span>
+                </SheetTitle>
+              </SheetHeader>
 
-                  {user ? (
-                    <>
-                      <div className="my-4 border-t border-border" />
-                      <Link
-                        href="/profile"
-                        onClick={() => setMobileOpen(false)}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted"
-                      >
-                        My Profile ({user.name})
-                      </Link>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setMobileOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full text-destructive rounded-xl justify-start px-4 gap-2"
-                      >
-                        <LogOutIcon className="size-4" />
-                        Sign Out
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="pt-4 flex flex-col gap-2 border-t border-border mt-2">
-                      <Link
-                        href="/login"
-                        onClick={() => setMobileOpen(false)}
-                        className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "w-full rounded-xl justify-center h-10 text-sm font-medium"
-                        )}
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        href="/register"
-                        onClick={() => setMobileOpen(false)}
-                        className={cn(
-                          buttonVariants({ variant: "default" }),
-                          "w-full rounded-xl justify-center h-10 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-                        )}
-                      >
-                        Sign Up
-                      </Link>
+              <div className="flex flex-col px-2 py-3">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "border-b border-border/60 px-3 py-3.5 text-[15px] transition-colors last:border-0",
+                      isActive(link.href)
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {isActive(link.href) ? (
+                      <span className="mark px-1">{link.label}</span>
+                    ) : (
+                      link.label
+                    )}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-auto border-t border-border p-4">
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="size-9">
+                        <AvatarImage
+                          alt={user.name || "Reader"}
+                          src={user.image || undefined}
+                        />
+                        <AvatarFallback className="bg-foreground text-[11px] text-background">
+                          {initial}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm text-foreground">
+                          {user.name}
+                        </p>
+                        <p className="label-mono truncate text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </nav>
-      </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full"
+                      )}
+                    >
+                      My Profile
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full justify-start gap-2 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <LogOut className="size-4" aria-hidden="true" />
+                      Log out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full"
+                      )}
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        buttonVariants({ variant: "default" }),
+                        "w-full"
+                      )}
+                    >
+                      Register
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
     </header>
   );
 }

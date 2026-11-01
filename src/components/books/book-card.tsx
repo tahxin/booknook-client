@@ -1,65 +1,62 @@
 import React from "react";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Book } from "@/types";
 import { BookCover } from "@/components/common/book-cover";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface BookCardProps {
   book: Book;
+  className?: string;
 }
 
-export function BookCard({ book }: BookCardProps) {
+export function BookCard({ book, className }: BookCardProps) {
   return (
-    <Card className="flex flex-col justify-between h-full rounded-2xl border border-border/80 bg-card p-4 hover:border-border transition-colors">
-      <div className="flex flex-col gap-3.5">
-        {/* Book Cover */}
-        <div className="w-full aspect-[16/11] rounded-2xl overflow-hidden">
-          <BookCover
-            title={book.title}
-            image={book.image}
-            aspectRatio="aspect-[16/11]"
-          />
-        </div>
+    <Link
+      href={`/books/${book._id}`}
+      className={cn("group flex h-full flex-col", className)}
+    >
+      <div className="relative shadow-[0_20px_34px_-28px_rgba(0,0,0,0.65)]">
+        <BookCover title={book.title} image={book.image} aspectRatio="aspect-[2/3]" />
+        {book.availableCopies === 0 ? (
+          <span className="label-mono absolute inset-x-0 bottom-0 bg-foreground/90 py-1.5 text-center text-background">
+            Not available
+          </span>
+        ) : null}
+      </div>
 
-        {/* Category Pill */}
-        <div>
-          <Badge
-            variant="outline"
-            className="rounded-full px-2.5 py-0.5 text-[11px] font-normal text-muted-foreground border-border/70 bg-transparent"
-          >
-            {book.category}
-          </Badge>
-        </div>
-
-        {/* Book Metadata */}
-        <div className="flex flex-col gap-0.5">
-          <h3
-            className="font-bold text-foreground text-base tracking-tight line-clamp-1"
-            title={book.title}
-          >
+      <div className="flex flex-1 flex-col pt-3">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-display text-[1.0625rem] leading-[1.15] tracking-[-0.01em] text-foreground transition-colors group-hover:text-primary line-clamp-2">
             {book.title}
           </h3>
-          <p className="text-sm text-muted-foreground font-normal">
-            {book.author}
-          </p>
+          <ArrowUpRight
+            className="mt-1 h-3.5 w-3.5 shrink-0 -translate-x-1 text-primary opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+            aria-hidden="true"
+          />
         </div>
-      </div>
+        <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
+          {book.author}
+        </p>
 
-      {/* View Details Button */}
-      <div className="pt-4 mt-auto">
-        <Link
-          href={`/books/${book._id}`}
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "w-full rounded-xl h-10 border-border/80 hover:bg-muted/60 text-foreground font-normal text-sm justify-center"
-          )}
-        >
-          View Details
-        </Link>
+        <div className="mt-auto flex items-baseline justify-between gap-3 border-t border-border pt-2.5">
+          <span className="label-mono text-muted-foreground">
+            {book.category}
+          </span>
+          <span
+            className="label-mono text-foreground"
+            data-numeric
+            title={`${book.availableCopies} of ${book.totalCopies} copies available`}
+          >
+            {book.availableCopies}
+            <span className="text-muted-foreground"> / {book.totalCopies}</span>
+          </span>
+        </div>
+        <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-primary">
+          View details
+          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </span>
       </div>
-    </Card>
+    </Link>
   );
 }
