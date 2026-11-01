@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
@@ -40,13 +40,13 @@ const SLIDES = [
 ];
 
 export function HeroSlider() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const [active, setActive] = useState(0);
   const swiperRef = useRef<SwiperType | null>(null);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const progress = ((active + 1) / SLIDES.length) * 100;
 
