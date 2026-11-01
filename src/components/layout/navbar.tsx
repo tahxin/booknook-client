@@ -75,13 +75,13 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-      <nav className="mx-auto flex h-[60px] max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
+      <nav className="mx-auto flex h-15 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
         <Link
           href="/"
           className="flex items-center gap-2.5 text-foreground"
           aria-label="BookNook home"
         >
-          <BookNookLogo className="h-[22px] w-[22px]" />
+          <BookNookLogo className="h-5.5 w-5.5" />
           <span className="font-display text-[1.125rem] leading-none tracking-[-0.01em]">
             BookNook
           </span>
@@ -95,7 +95,7 @@ export function Navbar() {
               className={cn(
                 "relative py-1 text-[13px] transition-colors",
                 isActive(link.href)
-                  ? "text-foreground after:absolute after:-bottom-[19px] after:left-0 after:right-0 after:h-[2px] after:bg-primary"
+                  ? "text-foreground after:absolute after:-bottom-4.75 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
