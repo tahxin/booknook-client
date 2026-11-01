@@ -20,8 +20,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
     category: "Novel",
-    image:
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
     description:
       "A classic American novel portraying the tragic story of Jay Gatsby and his unrequited pursuit of Daisy Buchanan during the Roaring Twenties.",
     totalCopies: 5,
@@ -35,8 +34,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Atomic Habits",
     author: "James Clear",
     category: "Non-Fiction",
-    image:
-      "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
     description:
       "An easy and proven way to build good habits and break bad ones. Small changes that deliver remarkable personal growth over time.",
     totalCopies: 6,
@@ -50,8 +48,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "The Midnight Library",
     author: "Matt Haig",
     category: "Fiction",
-    image:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780525559474-L.jpg",
     description:
       "Between life and death there is a library where every book gives you a chance to try another life you could have lived.",
     totalCopies: 4,
@@ -65,8 +62,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Sapiens: A Brief History of Humankind",
     author: "Yuval Noah Harari",
     category: "History",
-    image:
-      "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
     description:
       "A groundbreaking narrative of humanity's creation and evolution, exploring how biology and history have defined what it means to be human.",
     totalCopies: 4,
@@ -80,8 +76,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "The Little Prince",
     author: "Antoine de Saint-Exupéry",
     category: "Kids",
-    image:
-      "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
     description:
       "A timeless poetic tale about a young prince who visits various planets in space, addressing themes of loneliness, friendship, and love.",
     totalCopies: 5,
@@ -95,8 +90,7 @@ export const INITIAL_BOOKS: Book[] = [
     title: "Astrophysics for People in a Hurry",
     author: "Neil deGrasse Tyson",
     category: "Science",
-    image:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80",
+    image: "https://covers.openlibrary.org/b/isbn/9780393609394-L.jpg",
     description:
       "An essential, witty, and mind-expanding pocket guide to the cosmos, black holes, quantum mechanics, and the search for life in the universe.",
     totalCopies: 4,
@@ -112,8 +106,7 @@ const INITIAL_BORROWS: Borrow[] = [
     _id: "borrow-1",
     bookId: "book-3",
     bookTitle: "The Midnight Library",
-    bookImage:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
+    bookImage: "https://covers.openlibrary.org/b/isbn/9780525559474-L.jpg",
     userEmail: "tahxin@nishat.com",
     userName: "Shahjalal Ahmed Nishat",
     borrowDate: "2026-10-29T10:00:00.000Z",
@@ -123,8 +116,7 @@ const INITIAL_BORROWS: Borrow[] = [
     _id: "borrow-2",
     bookId: "book-4",
     bookTitle: "Sapiens: A Brief History of Humankind",
-    bookImage:
-      "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=80",
+    bookImage: "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
     userEmail: "tahxin@nishat.com",
     userName: "Shahjalal Ahmed Nishat",
     borrowDate: "2026-10-30T10:00:00.000Z",

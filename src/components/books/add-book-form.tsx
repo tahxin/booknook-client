@@ -23,13 +23,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
 const DEFAULT_CATEGORY_COVERS: Record<Category, string> = {
-  Novel: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80",
-  Fiction: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80",
-  "Non-Fiction": "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=800&auto=format&fit=crop&q=80",
-  History: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=80",
-  Science: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80",
-  Kids: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&auto=format&fit=crop&q=80",
-  Others: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop&q=80",
+  Novel: "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
+  Fiction: "https://covers.openlibrary.org/b/isbn/9780525559474-L.jpg",
+  "Non-Fiction": "https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg",
+  History: "https://covers.openlibrary.org/b/isbn/9780062316097-L.jpg",
+  Science: "https://covers.openlibrary.org/b/isbn/9780393609394-L.jpg",
+  Kids: "https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
+  Others: "https://covers.openlibrary.org/b/isbn/9780374533557-L.jpg",
 };
 
 export function AddBookForm() {
