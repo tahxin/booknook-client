@@ -1,5 +1,4 @@
 import React from "react";
-import { Loader2 } from "lucide-react";
 
 interface SpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -7,33 +6,42 @@ interface SpinnerProps {
   label?: string;
 }
 
+const HEIGHTS = {
+  sm: ["h-2", "h-3", "h-2"],
+  md: ["h-4", "h-6", "h-4"],
+  lg: ["h-6", "h-9", "h-6"],
+};
+
+/**
+ * Three spines settling into the shelf. Used everywhere a request is
+ * in flight so loading looks like the product, not a browser default.
+ */
 export function Spinner({
   size = "md",
   className = "",
-  label = "Loading...",
+  label = "Loading",
 }: SpinnerProps) {
-  const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-8 w-8",
-    lg: "h-12 w-12",
-  };
+  const heights = HEIGHTS[size];
 
   return (
     <div
       className={`flex flex-col items-center justify-center gap-3 p-6 ${className}`}
       role="status"
-      aria-label={label}
+      aria-live="polite"
     >
-      <Loader2
-        className={`${sizeClasses[size]} animate-spin text-primary`}
-      />
-      {label && (
-        <p className="text-sm text-muted-foreground font-medium animate-pulse">
-          {label}
-        </p>
-      )}
-      <span className="sr-only">{label}</span>
+      <div className="flex items-end gap-1.5" aria-hidden="true">
+        {heights.map((height, index) => (
+          <span
+            key={index}
+            className={`w-1.5 origin-bottom bg-foreground ${height}`}
+            style={{
+              animation: "shelf-pulse 900ms ease-in-out infinite",
+              animationDelay: `${index * 120}ms`,
+            }}
+          />
+        ))}
+      </div>
+      <p className="label-mono text-muted-foreground">{label}</p>
     </div>
   );
 }
-

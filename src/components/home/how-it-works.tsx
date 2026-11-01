@@ -1,52 +1,54 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
+import { SectionHeading } from "@/components/common/section-heading";
+import { cn } from "@/lib/utils";
+
+const STEPS = [
+  {
+    number: "01",
+    title: "Add a book",
+    description:
+      "Give it a title, an author, a cover, and the number of copies you can lend.",
+  },
+  {
+    number: "02",
+    title: "Borrow it",
+    description:
+      "Confirm in one step. The copy leaves the shelf and the counter goes down.",
+  },
+  {
+    number: "03",
+    title: "Return it",
+    description:
+      "Give it back from My Borrows. The counter goes up and the next reader can take it.",
+  },
+];
 
 export function HowItWorks() {
-  const steps = [
-    {
-      number: "01",
-      title: "Add a book",
-      description: "Share a title with a cover, author and copies.",
-    },
-    {
-      number: "02",
-      title: "Borrow it",
-      description: "Confirm in one step and keep it for a few days.",
-    },
-    {
-      number: "03",
-      title: "Return it",
-      description: "Give it back and the copy goes on the shelf.",
-    },
-  ];
-
   return (
-    <section id="how-it-works" className="w-full flex flex-col gap-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          How Borrowing Works
-        </h2>
-      </div>
+    <section id="how-it-works" className="w-full">
+      <SectionHeading title="How borrowing works" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {steps.map((step) => (
-          <Card
+      <div className="grid border-b border-border md:grid-cols-3">
+        {STEPS.map((step, index) => (
+          <div
             key={step.number}
-            className="rounded-2xl border border-border/80 bg-card p-6 flex flex-col items-start gap-4"
+            className={cn(
+              "border-b border-border/60 py-8 md:border-b-0 md:px-8",
+              index === 0 && "md:pl-0",
+              index > 0 && "md:border-l md:border-border/60",
+              index === STEPS.length - 1 && "border-b-0 md:pr-0"
+            )}
           >
-            <div className="rounded-full px-2.5 py-0.5 text-xs font-semibold text-[#b45309] dark:text-[#f5b942] border border-[#f5b942]/60 dark:border-white/10">
+            <span className="block font-display text-[3.25rem] leading-none tracking-[-0.04em] text-muted-foreground/80">
               {step.number}
-            </div>
-
-            <div className="space-y-1.5">
-              <h3 className="text-base font-bold text-foreground">
-                {step.title}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          </Card>
+            </span>
+            <h3 className="mt-4 font-display text-[1.25rem] leading-tight tracking-[-0.01em] text-foreground">
+              {step.title}
+            </h3>
+            <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-muted-foreground">
+              {step.description}
+            </p>
+          </div>
         ))}
       </div>
     </section>

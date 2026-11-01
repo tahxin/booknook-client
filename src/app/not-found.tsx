@@ -1,40 +1,43 @@
 import Link from "next/link";
-import { ArrowLeft, BookX } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-24">
-      <div className="relative mb-6">
-        <span className="text-8xl sm:text-9xl font-extrabold text-muted-foreground/20 select-none tracking-tighter">
+    <div className="flex flex-1 items-center">
+      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <p
+          aria-hidden="true"
+          className="select-none font-display text-[clamp(7rem,26vw,18rem)] leading-[0.72] tracking-[-0.07em] text-foreground/[0.07]"
+        >
           404
-        </span>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-16 w-16 rounded-2xl bg-card border border-border flex items-center justify-center text-primary shadow-sm">
-            <BookX className="h-8 w-8" />
-          </div>
+        </p>
+
+        <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.02] tracking-[-0.03em] text-foreground">
+          This page isn&apos;t on our shelf.
+        </h1>
+        <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
+          The book or page you were looking for may have been returned, moved to
+          another shelf, or never existed here at all.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          <Link
+            href="/"
+            className={cn(buttonVariants({ variant: "default" }), "gap-2")}
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Back to home
+          </Link>
+          <Link
+            href="/books"
+            className="label-mono link-quiet text-muted-foreground hover:text-foreground"
+          >
+            Browse all books
+          </Link>
         </div>
       </div>
-
-      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
-        This page isn&apos;t on our shelf.
-      </h1>
-      <p className="text-muted-foreground max-w-md mb-8 leading-relaxed">
-        The book or section you are searching for might have been moved, returned,
-        or never existed in our collection.
-      </p>
-
-      <Link
-        href="/"
-        className={cn(
-          buttonVariants({ variant: "default" }),
-          "rounded-xl h-11 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-medium flex items-center gap-2"
-        )}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        <span>Back to Home</span>
-      </Link>
     </div>
   );
 }

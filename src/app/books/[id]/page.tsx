@@ -13,22 +13,34 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function BookDetailsPage({ params }: PageProps) {
-  const { id } = await params;
-
+/**
+ * The route param is read inside a Suspense boundary so a client navigation
+ * can paint immediately instead of waiting on the dynamic segment.
+ */
+export default function BookDetailsPage({ params }: PageProps) {
   return (
     <PrivateRoute>
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="flex-1 w-full">
         <Suspense
           fallback={
-            <div className="min-h-[50vh] flex items-center justify-center">
-              <Spinner size="lg" label="Loading book details..." />
+            <div className="flex min-h-[50vh] items-center justify-center">
+              <Spinner size="lg" label="Fetching the catalogue entry" />
             </div>
           }
         >
-          <BookDetailsView id={id} />
+          <BookDetailsEntry params={params} />
         </Suspense>
       </div>
     </PrivateRoute>
+  );
+}
+
+async function BookDetailsEntry({ params }: PageProps) {
+  const { id } = await params;
+
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      <BookDetailsView id={id} />
+    </div>
   );
 }

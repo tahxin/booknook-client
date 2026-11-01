@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Gloock } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -17,10 +17,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const gloock = Gloock({
+  variable: "--font-gloock",
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "BookNook | A Small Online Library",
   description:
-    "Add a book, borrow a book, return a book. A calm and minimal online community library.",
+    "Add a book, borrow a book, return a book. A shared shelf for readers, with live copy counts and fourteen-day loans.",
 };
 
 export default function RootLayout({
@@ -32,9 +39,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${gloock.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/25 selection:text-primary">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -43,11 +50,11 @@ export default function RootLayout({
         >
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium shadow-md"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 z-[60] px-4 py-2 border border-foreground bg-background text-foreground label-mono"
           >
-            Skip to main content
+            Skip to content
           </a>
-          <Suspense fallback={<div className="h-14" />}>
+          <Suspense fallback={<div className="h-[60px]" />}>
             <Navbar />
           </Suspense>
           <main id="main-content" className="flex-1 flex flex-col">
@@ -55,10 +62,10 @@ export default function RootLayout({
           </main>
           <Footer />
           <Toaster
-            richColors
-            position="top-right"
+            position="bottom-right"
             toastOptions={{
-              className: "rounded-xl border-border font-sans shadow-md",
+              className:
+                "rounded-none border border-border bg-card text-card-foreground shadow-[0_18px_40px_-24px_rgba(0,0,0,0.55)] font-sans text-sm",
             }}
           />
         </ThemeProvider>

@@ -4,16 +4,15 @@ import { ProfileForm } from "@/components/profile/profile-form";
 
 export const metadata: Metadata = {
   title: "BookNook | My Profile",
-  description: "View and edit your BookNook library profile and settings.",
+  description: "View and edit your BookNook reader profile.",
 };
 
 export default function ProfilePage() {
   return (
     <PrivateRoute>
-      <div className="flex-1 max-w-6xl mx-auto w-full px-6 py-12">
+      <div className="flex-1 w-full">
         <ProfileForm />
       </div>
     </PrivateRoute>
   );
 }
-

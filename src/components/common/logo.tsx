@@ -6,31 +6,15 @@ export interface BookNookLogoProps extends React.SVGProps<SVGSVGElement> {
   withBackground?: boolean;
 }
 
+/**
+ * BookNook mark: four spines on a shelf, one of them marked with the
+ * highlighter. Drawn rather than borrowed so it holds at 20px.
+ */
 export function BookNookLogo({
   className = "h-6 w-6",
   withBackground = true,
   ...props
 }: BookNookLogoProps) {
-  if (!withBackground) {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className={cn("shrink-0", className)}
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        {...props}
-      >
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-      </svg>
-    );
-  }
-
   return (
     <svg
       viewBox="0 0 24 24"
@@ -40,25 +24,49 @@ export function BookNookLogo({
       aria-hidden="true"
       {...props}
     >
-      <rect
-        width="24"
-        height="24"
-        rx="6"
-        fill="#f5b942"
-        className="fill-primary"
-      />
-      <g
-        transform="translate(4.5, 4.5) scale(0.625)"
-        stroke="#1a1303"
-        className="stroke-primary-foreground"
-        strokeWidth="2.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      >
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      {withBackground && (
+        <rect width="24" height="24" rx="1" className="fill-foreground" />
+      )}
+      <g className={withBackground ? "" : "hidden"}>
+        <rect
+          x="3.75"
+          y="6.5"
+          width="3"
+          height="11"
+          className="fill-background"
+        />
+        <rect
+          x="8.25"
+          y="8.5"
+          width="3"
+          height="9"
+          className="fill-background"
+          opacity="0.5"
+        />
+        <rect
+          x="12.75"
+          y="4.5"
+          width="3"
+          height="13"
+          className="fill-highlight"
+        />
+        <rect
+          x="17.25"
+          y="9.5"
+          width="3"
+          height="8"
+          className="fill-background"
+          opacity="0.3"
+        />
       </g>
+      {!withBackground && (
+        <g className="stroke-foreground" strokeWidth="2">
+          <path d="M4 5v14" />
+          <path d="M9 7v12" opacity="0.45" />
+          <path d="M14 3v16" className="stroke-highlight" />
+          <path d="M19 9v10" opacity="0.3" />
+        </g>
+      )}
     </svg>
   );
 }

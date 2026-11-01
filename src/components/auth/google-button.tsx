@@ -17,7 +17,9 @@ export function GoogleButton({
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      const destination = callbackUrl.startsWith("/") ? callbackUrl : `/${callbackUrl}`;
+      const destination = callbackUrl.startsWith("/")
+        ? callbackUrl
+        : `/${callbackUrl}`;
       const fullCallbackUrl =
         typeof window !== "undefined"
           ? `${window.location.origin}${destination}`
@@ -29,7 +31,7 @@ export function GoogleButton({
       });
     } catch {
       toast.error(
-        "Google Sign-In is not configured yet. Please verify your Google Client ID and Secret in settings."
+        "Google sign-in is not configured. Use email and password, or add the Google keys first."
       );
     } finally {
       setLoading(false);
@@ -42,9 +44,9 @@ export function GoogleButton({
       variant="outline"
       onClick={handleGoogleSignIn}
       disabled={loading}
-      className="w-full h-11 rounded-xl border-border flex items-center justify-center gap-3 font-medium hover:bg-muted"
+      className="w-full gap-3"
     >
-      <svg className="h-4 w-4" viewBox="0 0 24 24">
+      <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
         <path
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
           fill="#4285F4"
@@ -66,4 +68,3 @@ export function GoogleButton({
     </Button>
   );
 }
-

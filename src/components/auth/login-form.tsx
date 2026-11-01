@@ -9,7 +9,8 @@ import { clearTokenCache } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { AuthShell } from "./auth-shell";
+import { GoogleButton } from "./google-button";
 import { toast } from "sonner";
 
 export function LoginForm() {
@@ -20,8 +21,8 @@ export function LoginForm() {
 
   const { data: session, isPending } = authClient.useSession();
 
-  const [email, setEmail] = useState("you@example.com");
-  const [password, setPassword] = useState("••••••");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -38,135 +39,108 @@ export function LoginForm() {
     try {
       setLoading(true);
       clearTokenCache();
-      const res = await authClient.signIn.email({
-        email,
-        password,
-      });
+      const res = await authClient.signIn.email({ email, password });
 
       if (res.error) {
-        setError(res.error.message || "Invalid email or password");
-        toast.error(res.error.message || "Invalid credentials");
+        setError(res.error.message || "That email and password did not match.");
+        toast.error(res.error.message || "That email and password did not match.");
         return;
       }
 
-      toast.success("Welcome back to BookNook!");
+      toast.success("Welcome back.");
       router.push(callbackUrl);
       router.refresh();
     } catch {
-      setError("An unexpected error occurred.");
-      toast.error("Failed to sign in.");
+      setError("Something went wrong on our side. Try again.");
+      toast.error("Could not log you in.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL:
-          callbackUrl && callbackUrl !== "/"
-            ? `${window.location.origin}${callbackUrl}`
-            : window.location.origin,
-      });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Google sign-in failed";
-      toast.error(msg);
-    }
-  };
-
   return (
-    <Card className="w-full max-w-md mx-auto rounded-3xl border border-border bg-card p-6 sm:p-8 text-foreground shadow-xl">
-      <CardContent className="p-0">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-6">
-          Sign in to your account
-        </h1>
-
-        {error && (
-          <div className="mb-4 p-3 text-xs rounded-xl bg-destructive/15 text-destructive border border-destructive/30">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs text-muted-foreground font-normal">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="h-11 rounded-xl bg-muted/40 border-border text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-xs text-muted-foreground font-normal">
-                Password
-              </Label>
-              <span className="text-xs text-muted-foreground/60 cursor-not-allowed select-none">
-                Forgot password?
-              </span>
-            </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="h-11 rounded-xl bg-muted/40 border-border text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
-
-          <div className="pt-2">
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Signing In...</span>
-                </span>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </div>
-        </form>
-
-        <div className="py-4 text-center text-xs text-muted-foreground">or</div>
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleGoogleSignIn}
-          className="w-full h-11 rounded-xl border-border bg-background hover:bg-muted text-foreground font-normal text-sm"
-        >
-          Continue with Google
-        </Button>
-
-        <p className="text-center text-xs text-muted-foreground pt-5">
-          Don&apos;t have an account?{" "}
+    <AuthShell
+      title="Log in to BookNook"
+      intro="Pick up where you left off: your loans, your shelf, and everything you added."
+      footer={
+        <p className="text-sm text-muted-foreground">
+          New here?{" "}
           <Link
             href={
               callbackUrl && callbackUrl !== "/"
                 ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
                 : "/register"
             }
-            className="text-primary hover:underline underline-offset-4 font-medium"
+            className="link-quiet text-foreground"
           >
-            Register
+            Create an account
           </Link>
         </p>
-      </CardContent>
-    </Card>
+      }
+    >
+      {error ? (
+        <div
+          role="alert"
+          className="mb-5 border border-destructive/40 bg-destructive/5 px-3 py-2 text-[13px] text-destructive"
+        >
+          {error}
+        </div>
+      ) : null}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between gap-4">
+            <Label htmlFor="password">Password</Label>
+            <span
+              aria-disabled="true"
+              className="text-[12px] text-muted-foreground/80 select-none"
+            >
+              Forgot password?
+            </span>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="Your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              Logging in
+            </>
+          ) : (
+            "Log in"
+          )}
+        </Button>
+      </form>
+
+      <div className="my-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-border" />
+        <span className="label-mono text-muted-foreground">or</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <GoogleButton callbackUrl={callbackUrl} />
+    </AuthShell>
   );
 }

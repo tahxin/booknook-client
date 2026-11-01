@@ -52,23 +52,22 @@ export function DeleteBookDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="sm:max-w-md rounded-2xl border border-border bg-card text-foreground p-6">
-        <AlertDialogHeader className="text-left space-y-2">
-          <AlertDialogTitle className="text-xl font-bold tracking-tight text-foreground">
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader className="border-b border-border p-6 text-left">
+          <AlertDialogTitle className="text-2xl text-foreground">
             Delete this book?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed">
+          <AlertDialogDescription className="mt-2 text-sm text-muted-foreground leading-relaxed">
             {book.title} will be removed from the library. This cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="flex-row justify-end gap-2 pt-3">
+        <AlertDialogFooter className="flex-row justify-end gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={deleting}
-            className="rounded-xl h-10 px-5 border-border bg-transparent text-foreground hover:bg-muted font-normal"
           >
             Cancel
           </Button>
@@ -76,7 +75,7 @@ export function DeleteBookDialog({
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            className="rounded-xl h-10 px-5 bg-destructive text-destructive-foreground hover:bg-destructive/90 font-medium"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {deleting ? (
               <span className="flex items-center gap-2">
@@ -84,7 +83,7 @@ export function DeleteBookDialog({
                 <span>Deleting...</span>
               </span>
             ) : (
-              "Yes, Delete"
+              "Yes, delete"
             )}
           </Button>
         </AlertDialogFooter>

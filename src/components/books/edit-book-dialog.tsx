@@ -86,17 +86,15 @@ export function EditBookDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg rounded-2xl border-border bg-card">
-        <DialogHeader className="text-left">
-          <DialogTitle className="text-xl font-bold tracking-tight">
-            Edit Book Details
-          </DialogTitle>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader className="border-b border-border p-6 text-left">
+          <DialogTitle className="text-2xl">Edit book</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Update information for &quot;{book.title}&quot; in the library.
+            Update the catalogue entry for &quot;{book.title}&quot;.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+        <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
           <div className="space-y-1.5">
             <Label htmlFor="edit-title">Book Title</Label>
             <Input
@@ -104,7 +102,7 @@ export function EditBookDialog({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="h-10 rounded-xl bg-background border-border"
+              className="bg-background"
             />
           </div>
 
@@ -115,7 +113,7 @@ export function EditBookDialog({
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               required
-              className="h-10 rounded-xl bg-background border-border"
+              className="bg-background"
             />
           </div>
 
@@ -126,10 +124,10 @@ export function EditBookDialog({
                 value={category}
                 onValueChange={(val) => setCategory(val as Category)}
               >
-                <SelectTrigger className="h-10 rounded-xl bg-background border-border">
+                <SelectTrigger className="h-11 bg-background">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent>
                   {CATEGORIES.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
@@ -148,7 +146,7 @@ export function EditBookDialog({
                 value={totalCopies}
                 onChange={(e) => setTotalCopies(Math.max(1, parseInt(e.target.value) || 1))}
                 required
-                className="h-10 rounded-xl bg-background border-border"
+                className="bg-background"
               />
             </div>
           </div>
@@ -159,7 +157,7 @@ export function EditBookDialog({
               id="edit-image"
               value={image}
               onChange={(e) => setImage(e.target.value)}
-              className="h-10 rounded-xl bg-background border-border"
+              className="bg-background"
             />
           </div>
 
@@ -171,25 +169,20 @@ export function EditBookDialog({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              className="rounded-xl bg-background border-border resize-none"
+              className="resize-none bg-background"
             />
           </div>
 
-          <DialogFooter className="flex-row justify-end gap-2 pt-2">
+          <DialogFooter className="flex-row justify-end gap-2 border-t border-border bg-transparent p-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={saving}
-              className="rounded-xl h-10 border-border"
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className="rounded-xl h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-            >
+            <Button type="submit" disabled={saving}>
               {saving ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />

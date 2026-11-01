@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Image as ImageIcon, Save, Loader2 } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
@@ -28,7 +27,7 @@ export function ProfileForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("Name cannot be empty");
+      toast.error("Your name cannot be empty.");
       return;
     }
 
@@ -39,15 +38,14 @@ export function ProfileForm() {
         image: image || undefined,
       });
 
-      // Refresh token if plugin is present
       if (authClient.token) {
         await authClient.token();
       }
 
-      toast.success("Profile updated successfully!");
+      toast.success("Profile saved.");
       router.refresh();
     } catch {
-      toast.error("Failed to update profile");
+      toast.error("Could not save your profile. Try again.");
     } finally {
       setSaving(false);
     }
@@ -61,47 +59,48 @@ export function ProfileForm() {
     .slice(0, 2);
 
   return (
-    <Card className="w-full max-w-xl mx-auto rounded-2xl border-border bg-card shadow-sm">
-      <CardHeader className="text-left pb-6 border-b border-border">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-16 w-16 border-2 border-primary/20">
-            <AvatarImage src={image} alt={name} />
-            <AvatarFallback className="bg-primary/20 text-primary font-bold text-lg">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <CardTitle className="text-2xl font-bold tracking-tight">
-              Library Profile
-            </CardTitle>
-            <CardDescription className="text-muted-foreground text-sm">
-              Manage your personal information and library card badge
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
+    <div className="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
+      <header className="border-b border-border pb-6">
+        <h1 className="font-display text-[clamp(2.3rem,5vw,3.4rem)] leading-[0.98] tracking-[-0.03em] text-foreground">
+          My profile
+        </h1>
+        <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+          Your name and photo appear wherever you add or borrow a book.
+        </p>
+      </header>
 
-      <CardContent className="pt-6">
+      <div className="mt-8 grid gap-10 md:grid-cols-[180px_1fr] md:gap-14">
+        <div>
+          <div className="border border-border bg-muted/40 p-3">
+            <Avatar className="aspect-square h-auto w-full rounded-none">
+              <AvatarImage src={image || undefined} alt={name || "Reader"} />
+              <AvatarFallback className="rounded-none bg-foreground font-display text-3xl text-background">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <p className="label-mono mt-3 text-muted-foreground">Reader card</p>
+          <p className="mt-1 truncate text-[12px] text-muted-foreground">
+            {session?.user?.email || "—"}
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>Email Address (Read-only)</span>
-            </Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
               value={session?.user?.email || ""}
               disabled
-              className="h-11 rounded-xl bg-muted/50 border-border cursor-not-allowed opacity-80"
             />
+            <p className="text-[12px] text-muted-foreground">
+              Your email is tied to your loans and cannot be changed here.
+            </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name" className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
-              <span>Full Name</span>
-            </Label>
+            <Label htmlFor="name">Name</Label>
             <Input
               id="name"
               type="text"
@@ -109,47 +108,37 @@ export function ProfileForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="h-11 rounded-xl bg-background border-border"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image" className="flex items-center gap-2">
-              <ImageIcon className="h-4 w-4 text-primary" />
-              <span>Avatar Image URL</span>
-            </Label>
+            <Label htmlFor="image">Photo URL</Label>
             <Input
               id="image"
               type="url"
-              placeholder="https://example.com/avatar.jpg"
+              placeholder="https://example.com/photo.jpg"
               value={image}
               onChange={(e) => setImage(e.target.value)}
-              className="h-11 rounded-xl bg-background border-border"
             />
           </div>
 
-          <div className="pt-2 flex justify-end">
-            <Button
-              type="submit"
-              disabled={saving}
-              className="h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium flex items-center gap-2"
-            >
+          <div className="flex justify-end border-t border-border pt-5">
+            <Button type="submit" disabled={saving} className="gap-2">
               {saving ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Saving Changes...</span>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Saving
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4" />
-                  <span>Save Changes</span>
+                  <Save className="h-4 w-4" aria-hidden="true" />
+                  Save changes
                 </>
               )}
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
-

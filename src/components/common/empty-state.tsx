@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { LucideIcon, BookOpen } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -19,36 +19,36 @@ interface EmptyStateProps {
 export function EmptyState({
   title,
   description,
-  icon: Icon = BookOpen,
+  icon: Icon,
   action,
   className = "",
 }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "text-center py-16 sm:py-20 rounded-2xl border border-dashed border-border bg-card/40 p-8 flex flex-col items-center justify-center gap-3",
+        "flex flex-col items-center justify-center border-b border-border py-20 text-center",
         className
       )}
     >
-      <div className="h-12 w-12 rounded-xl bg-muted/60 flex items-center justify-center text-muted-foreground border border-border">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="font-semibold text-lg text-foreground tracking-tight">
+      {Icon ? (
+        <Icon
+          className="mb-5 h-5 w-5 text-muted-foreground"
+          aria-hidden="true"
+        />
+      ) : null}
+      <h3 className="font-display text-2xl leading-tight tracking-[-0.01em] text-foreground">
         {title}
       </h3>
-      <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
         {description}
       </p>
 
-      {action && (
-        <div className="pt-2">
+      {action ? (
+        <div className="pt-6">
           {action.href ? (
             <Link
               href={action.href}
-              className={cn(
-                buttonVariants({ variant: "default" }),
-                "rounded-xl h-10 px-5 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-              )}
+              className={cn(buttonVariants({ variant: "default" }), "px-5")}
             >
               {action.label}
             </Link>
@@ -56,17 +56,13 @@ export function EmptyState({
             <button
               type="button"
               onClick={action.onClick}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "rounded-xl h-10 px-5 border-border hover:bg-muted font-medium text-xs"
-              )}
+              className={cn(buttonVariants({ variant: "outline" }), "px-5")}
             >
               {action.label}
             </button>
           ) : null}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
-

@@ -1,7 +1,5 @@
 export type Category =
   | "Fiction"
-  | "Non-Fiction"
-  | "Novel"
   | "Science"
   | "History"
   | "Kids"
@@ -9,8 +7,6 @@ export type Category =
 
 export const CATEGORIES: Category[] = [
   "Fiction",
-  "Non-Fiction",
-  "Novel",
   "Science",
   "History",
   "Kids",
